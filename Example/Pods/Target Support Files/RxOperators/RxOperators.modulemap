@@ -1,0 +1,6 @@
+framework module RxOperators {
+  umbrella header "RxOperators-umbrella.h"
+
+  export *
+  module * { export * }
+}

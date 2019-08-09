@@ -1,0 +1,16 @@
+PODS:
+  - RxOperators (0.1.0)
+
+DEPENDENCIES:
+  - RxOperators (from `../`)
+
+EXTERNAL SOURCES:
+  RxOperators:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  RxOperators: 3a77ad113636fe28794b303f844821470288cb33
+
+PODFILE CHECKSUM: e6c11ffc69805b62223545716f21406027c73b72
+
+COCOAPODS: 1.7.5
