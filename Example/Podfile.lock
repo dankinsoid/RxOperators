@@ -1,16 +1,37 @@
 PODS:
-  - RxOperators (0.1.0)
+  - RxCocoa (5.0.0):
+    - RxRelay (~> 5)
+    - RxSwift (~> 5)
+  - RxOperators (0.3.0):
+    - RxCocoa (~> 5.0)
+    - RxSwift (~> 5.0)
+    - UnwrapOperator (~> 0.1.0)
+  - RxRelay (5.0.0):
+    - RxSwift (~> 5)
+  - RxSwift (5.0.0)
+  - UnwrapOperator (0.1.0)
 
 DEPENDENCIES:
   - RxOperators (from `../`)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - RxCocoa
+    - RxRelay
+    - RxSwift
+    - UnwrapOperator
 
 EXTERNAL SOURCES:
   RxOperators:
     :path: "../"
 
 SPEC CHECKSUMS:
-  RxOperators: 3a77ad113636fe28794b303f844821470288cb33
+  RxCocoa: fcf32050ac00d801f34a7f71d5e8e7f23026dcd8
+  RxOperators: f481940e87a7a9ed51bf3aa6602221a2d2a053f4
+  RxRelay: 4f7409406a51a55cd88483f21ed898c234d60f18
+  RxSwift: 8b0671caa829a763bbce7271095859121cbd895f
+  UnwrapOperator: f1db2ac448c4bbd74fc19ddba8bcade22132f443
 
-PODFILE CHECKSUM: e6c11ffc69805b62223545716f21406027c73b72
+PODFILE CHECKSUM: ca1da4d49ec652cc75de3527154fa24f6ae2f56d
 
 COCOAPODS: 1.7.5

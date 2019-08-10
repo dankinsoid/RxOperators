@@ -68,3 +68,33 @@ extension ObservableType {
 	}
 	
 }
+
+extension NSRecursiveLock {
+    
+    func protect(code: () -> ()) {
+        lock()
+        code()
+        unlock()
+    }
+    
+    func protect<T>(code: () -> T) -> T {
+        lock()
+        defer { unlock() }
+        return code()
+    }
+}
+
+extension NSLock {
+    
+    func protect(code: () -> ()) {
+        lock()
+        code()
+        unlock()
+    }
+    
+    func protect<T>(code: () -> T) -> T {
+        lock()
+        defer { unlock() }
+        return code()
+    }
+}
