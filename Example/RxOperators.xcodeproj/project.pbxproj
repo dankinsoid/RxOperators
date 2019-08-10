@@ -13,14 +13,14 @@
 
 /* Begin PBXFileReference section */
 		2BA08FD325AD9B1D5CCC0338 /* Pods-RxOperators_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RxOperators_Tests.debug.xcconfig"; path = "Target Support Files/Pods-RxOperators_Tests/Pods-RxOperators_Tests.debug.xcconfig"; sourceTree = "<group>"; };
-		580992F0EAF5C3AF96572933 /* RxOperators.podspec */ = {isa = PBXFileReference; includeInIndex = 1; name = RxOperators.podspec; path = ../RxOperators.podspec; sourceTree = "<group>"; };
+		580992F0EAF5C3AF96572933 /* RxOperators.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = RxOperators.podspec; path = ../RxOperators.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		607FACE51AFB9204008FA782 /* RxOperators_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RxOperators_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
-		A64B5FF9807A899950BE9450 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		A64B5FF9807A899950BE9450 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		ABC2D4D54A9CA311B2CA8F70 /* Pods_RxOperators_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RxOperators_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C8884902E9C07ABFED6DD13A /* Pods-RxOperators_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RxOperators_Tests.release.xcconfig"; path = "Target Support Files/Pods-RxOperators_Tests/Pods-RxOperators_Tests.release.xcconfig"; sourceTree = "<group>"; };
-		F01B2C36FC2318E76EA33C90 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		F01B2C36FC2318E76EA33C90 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,7 +95,6 @@
 				2BA08FD325AD9B1D5CCC0338 /* Pods-RxOperators_Tests.debug.xcconfig */,
 				C8884902E9C07ABFED6DD13A /* Pods-RxOperators_Tests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -131,12 +130,9 @@
 				LastUpgradeCheck = 0830;
 				ORGANIZATIONNAME = CocoaPods;
 				TargetAttributes = {
-					607FACCF1AFB9204008FA782 = {
-						CreatedOnToolsVersion = 6.3.1;
-						LastSwiftMigration = 0900;
-					};
 					607FACE41AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
+						DevelopmentTeam = 4733T56UZW;
 						LastSwiftMigration = 0900;
 						TestTargetID = 607FACCF1AFB9204008FA782;
 					};
@@ -147,6 +143,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -270,7 +267,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -316,7 +313,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -328,6 +325,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2BA08FD325AD9B1D5CCC0338 /* Pods-RxOperators_Tests.debug.xcconfig */;
 			buildSettings = {
+				DEVELOPMENT_TEAM = 4733T56UZW;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -350,6 +348,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C8884902E9C07ABFED6DD13A /* Pods-RxOperators_Tests.release.xcconfig */;
 			buildSettings = {
+				DEVELOPMENT_TEAM = 4733T56UZW;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
 					"$(inherited)",

@@ -9,10 +9,14 @@
 /* Begin PBXBuildFile section */
 		1414011170C568C70A33DD278814413E /* Pods-RxOperators_Tests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 7738CBDD53E09559E9CD6B16395CFD45 /* Pods-RxOperators_Tests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		68A3A2EFCB7C89E0F955FFDED29E05E1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3212113385A8FBBDB272BD23C409FF61 /* Foundation.framework */; };
+		83B7864722FE3F6900EB4523 /* Rx++.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B7864522FE3F6900EB4523 /* Rx++.swift */; };
+		83B7864822FE3F6900EB4523 /* RxOperators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B7864622FE3F6900EB4523 /* RxOperators.swift */; };
+		83B7864A22FE3FCF00EB4523 /* DisposableObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B7864922FE3FCF00EB4523 /* DisposableObserver.swift */; };
+		83B7864C22FE400D00EB4523 /* PublishDisposeSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B7864B22FE400D00EB4523 /* PublishDisposeSubject.swift */; };
+		83B7864E22FE402D00EB4523 /* ValueSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B7864D22FE402D00EB4523 /* ValueSubject.swift */; };
 		8FAD60BAC6251D33047BB8F79EB351C0 /* Pods-RxOperators_Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = A304D5DE34F1D301A558D29890009EED /* Pods-RxOperators_Tests-dummy.m */; };
 		D230B490A3F45E4D49C11FE8AEA6FB60 /* RxOperators-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAC3C0CBE416E8DB80495CE55DB8A40 /* RxOperators-dummy.m */; };
 		E7B2B805C0F9144157BB1101590E914E /* RxOperators-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 9679A1B387D60595F2938CA483667E68 /* RxOperators-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		EFA4963CC1ACA487F50C145371D0BF45 /* ReplaceMe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 623CCD60A5174A96594FED19DEB31B6A /* ReplaceMe.swift */; };
 		F2D147A0441CD6BC9CFA9D77A2E8AF54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3212113385A8FBBDB272BD23C409FF61 /* Foundation.framework */; };
 /* End PBXBuildFile section */
 
@@ -27,28 +31,32 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		098BBD275648C3C4351911A663152C99 /* Pods_RxOperators_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_RxOperators_Tests.framework; path = "Pods-RxOperators_Tests.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		098BBD275648C3C4351911A663152C99 /* Pods_RxOperators_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RxOperators_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1BFBA5B474488A419D370B55D4293519 /* Pods-RxOperators_Tests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-RxOperators_Tests-acknowledgements.markdown"; sourceTree = "<group>"; };
-		1F71746086DC8E56389C6674268A9B24 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		1F71746086DC8E56389C6674268A9B24 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		2A9CFCEA1DADEE11F35EDA4042E1FBB2 /* Pods-RxOperators_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-RxOperators_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		309AC930B75B3BD73D140C95E716F3DA /* Pods-RxOperators_Tests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-RxOperators_Tests-acknowledgements.plist"; sourceTree = "<group>"; };
 		3212113385A8FBBDB272BD23C409FF61 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.2.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		3A90CD27F5C89A04421EBBBF2074D635 /* Pods-RxOperators_Tests-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-RxOperators_Tests-frameworks.sh"; sourceTree = "<group>"; };
 		44DF0564164DB434A259C911186E36D9 /* Pods-RxOperators_Tests-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-RxOperators_Tests-Info.plist"; sourceTree = "<group>"; };
-		50885A9C0EE991D254DF33985FB0F3CC /* RxOperators.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = RxOperators.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		50885A9C0EE991D254DF33985FB0F3CC /* RxOperators.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = RxOperators.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		566D3D54AAF13A823BE9321226160131 /* Pods-RxOperators_Tests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-RxOperators_Tests.modulemap"; sourceTree = "<group>"; };
-		623CCD60A5174A96594FED19DEB31B6A /* ReplaceMe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ReplaceMe.swift; path = RxOperators/Classes/ReplaceMe.swift; sourceTree = "<group>"; };
 		6820211BA17544ACF13990AAEADD2E0F /* RxOperators-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "RxOperators-Info.plist"; sourceTree = "<group>"; };
 		7042C953B986284CB904F6E190CC1D7C /* RxOperators.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RxOperators.xcconfig; sourceTree = "<group>"; };
 		7738CBDD53E09559E9CD6B16395CFD45 /* Pods-RxOperators_Tests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-RxOperators_Tests-umbrella.h"; sourceTree = "<group>"; };
 		7C43D553957E9F1D1FDEF5F85115424C /* Pods-RxOperators_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-RxOperators_Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		83B7864522FE3F6900EB4523 /* Rx++.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Rx++.swift"; path = "RxOperators/Classes/Rx++.swift"; sourceTree = "<group>"; };
+		83B7864622FE3F6900EB4523 /* RxOperators.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RxOperators.swift; path = RxOperators/Classes/RxOperators.swift; sourceTree = "<group>"; };
+		83B7864922FE3FCF00EB4523 /* DisposableObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisposableObserver.swift; sourceTree = "<group>"; };
+		83B7864B22FE400D00EB4523 /* PublishDisposeSubject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishDisposeSubject.swift; sourceTree = "<group>"; };
+		83B7864D22FE402D00EB4523 /* ValueSubject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueSubject.swift; sourceTree = "<group>"; };
 		9679A1B387D60595F2938CA483667E68 /* RxOperators-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RxOperators-umbrella.h"; sourceTree = "<group>"; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		A304D5DE34F1D301A558D29890009EED /* Pods-RxOperators_Tests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-RxOperators_Tests-dummy.m"; sourceTree = "<group>"; };
-		A39EF9A254A6CD86B80EE3E94269B131 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		A39EF9A254A6CD86B80EE3E94269B131 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		DE5B1974ED253CC5C7E6FFDD97B5024B /* RxOperators-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RxOperators-prefix.pch"; sourceTree = "<group>"; };
 		DEAC3C0CBE416E8DB80495CE55DB8A40 /* RxOperators-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "RxOperators-dummy.m"; sourceTree = "<group>"; };
-		F65B1A6CD62CF25678E22D868B68F929 /* RxOperators.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = RxOperators.framework; path = RxOperators.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F65B1A6CD62CF25678E22D868B68F929 /* RxOperators.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RxOperators.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA7EB6628C12C9328D00C81D890CCB56 /* RxOperators.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = RxOperators.modulemap; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -84,7 +92,11 @@
 		3C2F5318C21DFF0A422187958C3157B3 /* RxOperators */ = {
 			isa = PBXGroup;
 			children = (
-				623CCD60A5174A96594FED19DEB31B6A /* ReplaceMe.swift */,
+				83B7864522FE3F6900EB4523 /* Rx++.swift */,
+				83B7864922FE3FCF00EB4523 /* DisposableObserver.swift */,
+				83B7864D22FE402D00EB4523 /* ValueSubject.swift */,
+				83B7864622FE3F6900EB4523 /* RxOperators.swift */,
+				83B7864B22FE400D00EB4523 /* PublishDisposeSubject.swift */,
 				DB2489409E90E78842CEAA204D83047D /* Pod */,
 				7AFF93709EF5C7E76AA4FB1AC1C0B852 /* Support Files */,
 			);
@@ -243,6 +255,11 @@
 			attributes = {
 				LastSwiftUpdateCheck = 1100;
 				LastUpgradeCheck = 1100;
+				TargetAttributes = {
+					92907F58CD47EAC5F3FD492A8B2E58EF = {
+						LastSwiftMigration = 1030;
+					};
+				};
 			};
 			buildConfigurationList = 4821239608C13582E20E6DA73FD5F1F9 /* Build configuration list for PBXProject "Pods" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -284,8 +301,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EFA4963CC1ACA487F50C145371D0BF45 /* ReplaceMe.swift in Sources */,
+				83B7864E22FE402D00EB4523 /* ValueSubject.swift in Sources */,
+				83B7864822FE3F6900EB4523 /* RxOperators.swift in Sources */,
+				83B7864A22FE3FCF00EB4523 /* DisposableObserver.swift in Sources */,
 				D230B490A3F45E4D49C11FE8AEA6FB60 /* RxOperators-dummy.m in Sources */,
+				83B7864722FE3F6900EB4523 /* Rx++.swift in Sources */,
+				83B7864C22FE400D00EB4523 /* PublishDisposeSubject.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -313,6 +334,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7042C953B986284CB904F6E190CC1D7C /* RxOperators.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
@@ -333,6 +355,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -344,6 +367,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7042C953B986284CB904F6E190CC1D7C /* RxOperators.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
@@ -459,8 +483,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};
