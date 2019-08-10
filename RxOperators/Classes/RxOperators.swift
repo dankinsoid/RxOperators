@@ -347,3 +347,11 @@ private struct WeakRef<T: AnyObject, Element>: ObserverType {
 	}
 	
 }
+
+extension Reactive where Base: AnyObject {
+    
+    public func keyPath<Element>(_ keyPath: ReferenceWritableKeyPath<Base, Element>) -> AnyObserver<Element> {
+        return WeakRef(object: base, keyPath: keyPath).asObserver()
+    }
+    
+}
