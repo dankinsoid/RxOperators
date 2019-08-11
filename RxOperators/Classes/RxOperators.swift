@@ -18,8 +18,13 @@ infix operator <==> : RxPrecedence
 infix operator => : RxPrecedence
 infix operator ==> : RxPrecedence
 
+public func =><T: ObservableType, O: AnyObject, E>(_ lhs: T?, _ rhs:  (O, (O) -> (E) -> ())) -> Disposable where E == T.Element {
+    let deallocated = Reactive(rhs.0).deallocated
+    return lhs?.takeUntil(deallocated).subscribe(Reactive(rhs.0).weak(method: rhs.1)) ?? Disposables.create()
+}
+
 public func =><O: ObservableType>(_ lhs: O?, _ rhs: @escaping (O.Element) -> ()) -> Disposable {
-	return lhs?.asObservable().subscribe(onNext: rhs) ?? Disposables.create()
+    return lhs?.asObservable().subscribe(onNext: rhs) ?? Disposables.create()
 }
 
 public func =><O: ObservableType>(_ lhs: O?, _ rhs: [(O.Element) -> ()]) -> Disposable {
@@ -115,6 +120,11 @@ public func ==><O: DisposableObservableType>(_ lhs: O?, _ rhs: @escaping (O.Elem
 public func ==><T: ObservableType, O: AnyObject, E>(_ lhs: T?, _ rhs: (O, ReferenceWritableKeyPath<O, E>)) -> Disposable where E == T.Element {
 	let deallocated = Reactive(rhs.0).deallocated
 	return lhs?.takeUntil(deallocated).asDriver().drive(WeakRef(object: rhs.0, keyPath: rhs.1).asObserver()) ?? Disposables.create()
+}
+
+public func ==><T: ObservableType, O: AnyObject, E>(_ lhs: T?, _ rhs:  (O, (O) -> (E) -> ())) -> Disposable where E == T.Element {
+    let deallocated = Reactive(rhs.0).deallocated
+    return lhs?.takeUntil(deallocated).asDriver().drive(Reactive(rhs.0).weak(method: rhs.1)) ?? Disposables.create()
 }
 
 @discardableResult
@@ -326,32 +336,4 @@ extension PrimitiveSequenceType where Trait == SingleTrait {
 		return e!
 	}
 	
-}
-
-extension ObservableType {
-	
-	public func asDriver() -> Driver<Element> {
-		return asDriver(onErrorDriveWith: .never())
-	}
-	
-}
-
-private struct WeakRef<T: AnyObject, Element>: ObserverType {
-	weak var object: T?
-	let keyPath: ReferenceWritableKeyPath<T, Element>
-	
-	func on(_ event: Event<Element>) {
-		if case .next(let value) = event {
-			object?[keyPath: keyPath] = value
-		}
-	}
-	
-}
-
-extension Reactive where Base: AnyObject {
-    
-    public func keyPath<Element>(_ keyPath: ReferenceWritableKeyPath<Base, Element>) -> AnyObserver<Element> {
-        return WeakRef(object: base, keyPath: keyPath).asObserver()
-    }
-    
 }
