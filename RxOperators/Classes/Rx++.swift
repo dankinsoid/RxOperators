@@ -142,3 +142,81 @@ extension Reactive where Base: AnyObject {
     }
     
 }
+
+extension ObservableType {
+    
+    public func map<B: AnyObject, T>(_ method:  @escaping (B) -> (Element) -> T, on object: B) -> Observable<T> {
+        return compactMap {[weak object] in
+            guard let obj = object else { return nil }
+            return method(obj)($0)
+        }
+    }
+    
+}
+
+public func +<T: ObservableType, O: ObservableType>(_ lhs: T, _ rhs: O) -> Observable<O.Element> where O.Element == T.Element {
+    return Observable.merge([lhs.asObservable(), rhs.asObservable()])
+}
+
+public func +<T: ObserverType, O: ObserverType>(_ lhs: T, _ rhs: O) -> AnyObserver<O.Element> where O.Element == T.Element {
+    let o1 = lhs.asObserver()
+    let o2 = rhs.asObserver()
+    return AnyObserver {
+        o1.on($0)
+        o2.on($0)
+    }
+}
+
+public func +(_ lhs: Disposable, _ rhs: Disposable) -> Cancelable {
+    return Disposables.create(lhs, rhs)
+}
+
+public func +=<O: ObservableType>(_ lhs: inout Observable<O.Element>, _ rhs: O) {
+    lhs = Observable.merge([lhs.asObservable(), rhs.asObservable()])
+}
+
+public func +=<O: ObserverType>(_ lhs: inout AnyObserver<O.Element>, _ rhs: O) {
+    lhs = lhs + rhs
+}
+
+public func +=<O: Disposable>(_ lhs: inout Cancelable, _ rhs: O) {
+    lhs = lhs + rhs
+}
+
+//public func +<A: ObservableType, B: ObservableType>(_ lhs: A, _ rhs: B) -> Observable<(A.E, B.Element)> {
+//    return Observable.combineLatest(lhs, rhs) { ($0, $1) }
+//}
+//
+//func +<A>(_ lhs: @escaping (A) -> (), _ rhs: @escaping (A) -> ()) -> (A) -> () {
+//    return { lhs($0); rhs($0) }
+//}
+
+extension PrimitiveSequenceType where Trait == SingleTrait {
+    
+    public func await() throws -> Element {
+        var e: Element?
+        var err: Error?
+        let semaphore = DispatchSemaphore(value: 0)
+        var d: Disposable?
+        DispatchQueue.global().async {
+            d = self.primitiveSequence.asObservable().subscribe { (event) in
+                switch event {
+                case .next(let element):
+                    e = element
+                case .error(let error):
+                    err = error; semaphore.signal()
+                case .completed: semaphore.signal()
+                }
+            }
+        }
+        semaphore.wait()
+        d?.dispose()
+        if let er = err {
+            throw er
+        } else if e == nil {
+            throw RxError.noElements
+        }
+        return e!
+    }
+    
+}
