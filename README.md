@@ -52,20 +52,20 @@ class ViewController: UIViewController {
 
 1. Operator `=>` 
 
-  1. From `ObservableType` to `ObserverType`, creates a subscription and returns `Disposable`:
+  - From `ObservableType` to `ObserverType`, creates a subscription and returns `Disposable`:
   
   ```swift
   let disposable = intObservable => intObserver
   ```
 
-  2. From `Disposable` to `DisposeBag`:
+  - From `Disposable` to `DisposeBag`:
   
   ```swift
   someDisposable => disposeBag
   someObservable => someObserver => disposeBag
   ```
   
-  3. From `ObservableType` to `SchedulerType`, returns `Observable<E>`:
+  - From `ObservableType` to `SchedulerType`, returns `Observable<E>`:
   
   ```swift
   let scheduler = SerialDispatchQueueScheduler(internalSerialQueueName: "Scheduler")
