@@ -141,6 +141,10 @@ extension Reactive where Base: AnyObject {
         return WeakMethod(object: base, method: method).asObserver()
     }
     
+    public func weak(method: @escaping (Base) -> () -> ()) -> AnyObserver<Void> {
+        return WeakMethod(object: base, method: { b in {_ in method(b)() } }).asObserver()
+    }
+    
 }
 
 extension ObservableType {
