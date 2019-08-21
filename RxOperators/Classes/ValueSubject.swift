@@ -13,7 +13,7 @@ public final class ValueSubject<Element>: DisposableObservableType, DisposableOb
     public var value: Element {
         get { return lock.protect { _value } }
         set {
-            lock.protect { _value = newValue }
+            setValue(newValue)
             publishSubject.onNext(newValue)
         }
     }
@@ -34,6 +34,13 @@ public final class ValueSubject<Element>: DisposableObservableType, DisposableOb
         return result
     }
     
+    public func asNotSharing() -> AnyObserver<Element> {
+        return AnyObserver {[weak self] in
+            guard case .next(let newValue) = $0 else { return }
+            self?.setValue(newValue)
+        }
+    }
+    
     public func on(_ event: Event<Element>) {
         guard case .next(let newValue) = event else { return }
         value = newValue
@@ -41,6 +48,10 @@ public final class ValueSubject<Element>: DisposableObservableType, DisposableOb
     
     public func insert(disposable: Disposable) {
         disposeBag.insert(disposable)
+    }
+    
+    private func setValue(_ newValue: Element) {
+        lock.protect { _value = newValue }
     }
     
 }
