@@ -31,23 +31,15 @@ extension NSNotification.Name {
 
 extension ObservableType where Element: OptionalProtocol {
 	
-	func skipNil() -> Observable<Element.Wrapped> {
+	public func skipNil() -> Observable<Element.Wrapped> {
 		return map({ $0.asOptional() }).filter({ $0 != nil }).map({ $0! })
-	}
-	
-}
-
-extension ObservableType where Element == String? {
-	
-	func orEmpty() -> Observable<String> {
-		return map({ $0 ?? "" })
 	}
 	
 }
 
 extension ObservableType where Element == Bool? {
 	
-	func or(_ value: Bool) -> Observable<Bool> {
+	public func or(_ value: Bool) -> Observable<Bool> {
 		return map({ $0 ?? value })
 	}
 	
@@ -55,7 +47,7 @@ extension ObservableType where Element == Bool? {
 
 extension ObservableType where Element == Bool {
 	
-	func toggle() -> Observable<Bool> {
+	public func toggle() -> Observable<Bool> {
 		return map({ !$0 })
 	}
 	
@@ -63,7 +55,7 @@ extension ObservableType where Element == Bool {
 
 extension ObservableType {
 	
-	func compactMap<U>(_ block: @escaping (Element) throws -> U?) -> Observable<U> {
+	public func compactMap<U>(_ block: @escaping (Element) throws -> U?) -> Observable<U> {
 		return map(block).skipNil()
 	}
 	
@@ -107,11 +99,11 @@ extension ObservableType {
     
 }
 
-struct WeakRef<T: AnyObject, Element>: ObserverType {
-    weak var object: T?
-    let keyPath: ReferenceWritableKeyPath<T, Element>
+public struct WeakRef<T: AnyObject, Element>: ObserverType {
+    public weak var object: T?
+    public let keyPath: ReferenceWritableKeyPath<T, Element>
     
-    func on(_ event: Event<Element>) {
+    public func on(_ event: Event<Element>) {
         if case .next(let value) = event {
             object?[keyPath: keyPath] = value
         }
@@ -119,11 +111,11 @@ struct WeakRef<T: AnyObject, Element>: ObserverType {
     
 }
 
-struct WeakMethod<T: AnyObject, Element>: ObserverType {
-    weak var object: T?
-    let method: (T) -> (Element) -> ()
+public struct WeakMethod<T: AnyObject, Element>: ObserverType {
+    public weak var object: T?
+    public let method: (T) -> (Element) -> ()
     
-    func on(_ event: Event<Element>) {
+    public func on(_ event: Event<Element>) {
         if let obj = object, case .next(let value) = event {
             method(obj)(value)
         }

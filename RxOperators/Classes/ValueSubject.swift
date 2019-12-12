@@ -8,8 +8,13 @@
 import RxSwift
 import RxCocoa
 
+@propertyWrapper
 public final class ValueSubject<Element>: DisposableObservableType, DisposableObserverType {
     
+    public var wrappedValue: Element {
+        get { value }
+        set { value = newValue }
+    }
     public var value: Element {
         get { return lock.protect { _value } }
         set {
@@ -22,8 +27,12 @@ public final class ValueSubject<Element>: DisposableObservableType, DisposableOb
     private var _value: Element
     private let publishSubject = PublishSubject<Element>()
     
-    public init(_ value: Element) {
-        _value = value
+    public init(wrappedValue initialValue: Element) {
+        _value = initialValue
+    }
+    
+    public convenience init(_ value: Element) {
+        self.init(wrappedValue: value)
     }
     
     @discardableResult
