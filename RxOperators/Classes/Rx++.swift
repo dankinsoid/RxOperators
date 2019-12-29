@@ -53,14 +53,6 @@ extension ObservableType where Element == Bool {
 	
 }
 
-extension ObservableType {
-	
-	public func compactMap<U>(_ block: @escaping (Element) throws -> U?) -> Observable<U> {
-		return map(block).skipNil()
-	}
-	
-}
-
 extension NSRecursiveLock {
     
     func protect(code: () -> ()) {
