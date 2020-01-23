@@ -8,15 +8,24 @@
 import RxSwift
 import RxCocoa
 
+@dynamicMemberLookup
 public final class PublishDisposeSubject<Element>: DisposableObservableType, DisposableObserverType {
-    private let disposeBag = DisposeBag()
+    private let disposeBag: DisposeBag
     private let publishSubject = PublishSubject<Element>()
+    
+    public init(bag: DisposeBag = DisposeBag()) {
+        disposeBag = bag
+    }
     
     @discardableResult
     public func subscribe<O: ObserverType>(_ observer: O) -> Disposable where Element == O.Element {
         let result = publishSubject.subscribe(observer)
         insert(disposable: result)
         return result
+    }
+    
+    public subscript<T>(dynamicMember keyPath: KeyPath<Element, T>) -> Observable<T> {
+        self.map { $0[keyPath: keyPath] }
     }
     
     public func on(_ event: Event<Element>) {

@@ -11,25 +11,25 @@ import RxCocoa
 public protocol DisposableObserverType: class {
     associatedtype Element
     func on(_ event: Event<Element>)
-    func observe<O: ObservableType>(observable: O) where O.Element == Element
+    func observe<O: ObservableConvertibleType>(observable: O) where O.Element == Element
     func asObserver() -> AnyObserver<Element>
     func insert(disposable: Disposable)
 }
 
 extension DisposableObserverType {
     
-    public func observe<O: ObservableType>(_ observable: O) where O.Element == Element {
+    public func observe<O: ObservableConvertibleType>(_ observable: O) where O.Element == Element {
         insert(disposable: observable.asObservable().subscribe(asObserver()))
     }
     
     @discardableResult
-    func observe<O: ObservableType>(_ observable: O) -> Disposable where O.Element == Element {
+    func observe<O: ObservableConvertibleType>(_ observable: O) -> Disposable where O.Element == Element {
         let result = observable.asObservable().subscribe(asObserver())
         insert(disposable: result)
         return result
     }
     
-    public func observe<O: ObservableType>(observable: O) where Element == O.Element {
+    public func observe<O: ObservableConvertibleType>(observable: O) where Element == O.Element {
         insert(disposable: observable.asObservable().subscribe(asObserver()))
     }
     

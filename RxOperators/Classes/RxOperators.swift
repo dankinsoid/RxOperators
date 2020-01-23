@@ -18,31 +18,31 @@ infix operator <==> : RxPrecedence
 infix operator => : RxPrecedence
 infix operator ==> : RxPrecedence
 
-public func =><T: ObservableType, O: ObserverType>(_ lhs: T?, _ rhs: O) -> Disposable where O.Element == T.Element {
+public func =><T: ObservableConvertibleType, O: ObserverType>(_ lhs: T?, _ rhs: O) -> Disposable where O.Element == T.Element {
     return lhs?.asObservable().subscribe(rhs.asObserver()) ?? Disposables.create()
 }
 
-public func =><T: ObservableType, O: AnyObject>(_ lhs: T?, _ rhs:  (O, (O) -> (T.Element) -> ())) -> Disposable {
+public func =><T: ObservableConvertibleType, O: AnyObject>(_ lhs: T?, _ rhs:  (O, (O) -> (T.Element) -> ())) -> Disposable {
     let deallocated = Reactive(rhs.0).deallocated
-    return lhs?.takeUntil(deallocated).subscribe(Reactive(rhs.0).weak(method: rhs.1)) ?? Disposables.create()
+    return lhs?.asObservable().takeUntil(deallocated).subscribe(Reactive(rhs.0).weak(method: rhs.1)) ?? Disposables.create()
 }
 
-public func =><T: ObservableType, O: AnyObject>(_ lhs: T?, _ rhs:  (O, (O) -> () -> ())) -> Disposable where T.Element == Void {
+public func =><T: ObservableConvertibleType, O: AnyObject>(_ lhs: T?, _ rhs:  (O, (O) -> () -> ())) -> Disposable where T.Element == Void {
     let deallocated = Reactive(rhs.0).deallocated
-    return lhs?.takeUntil(deallocated).subscribe(Reactive(rhs.0).weak(method: rhs.1)) ?? Disposables.create()
+    return lhs?.asObservable().takeUntil(deallocated).subscribe(Reactive(rhs.0).weak(method: rhs.1)) ?? Disposables.create()
 }
 
-public func =><O: ObservableType>(_ lhs: O?, _ rhs: @escaping (O.Element) -> ()) -> Disposable {
+public func =><O: ObservableConvertibleType>(_ lhs: O?, _ rhs: @escaping (O.Element) -> ()) -> Disposable {
     return lhs?.asObservable().subscribe(onNext: rhs) ?? Disposables.create()
 }
 
-public func =><O: ObservableType>(_ lhs: O?, _ rhs: [(O.Element) -> ()]) -> Disposable {
+public func =><O: ObservableConvertibleType>(_ lhs: O?, _ rhs: [(O.Element) -> ()]) -> Disposable {
 	return lhs?.asObservable().subscribe(onNext: { next in rhs.forEach{ $0(next) } }) ?? Disposables.create()
 }
 
-public func =><T: ObservableType, O: AnyObject>(_ lhs: T?, _ rhs: (O, ReferenceWritableKeyPath<O, T.Element>)) -> Disposable {
+public func =><T: ObservableConvertibleType, O: AnyObject>(_ lhs: T?, _ rhs: (O, ReferenceWritableKeyPath<O, T.Element>)) -> Disposable {
 	let deallocated = Reactive(rhs.0).deallocated
-	return lhs?.takeUntil(deallocated).subscribe(WeakRef(object: rhs.0, keyPath: rhs.1).asObserver()) ?? Disposables.create()
+    return lhs?.asObservable().takeUntil(deallocated).subscribe(WeakRef(object: rhs.0, keyPath: rhs.1).asObserver()) ?? Disposables.create()
 }
 
 @discardableResult
@@ -74,7 +74,7 @@ public func =><O: DisposableObservableType>(_ lhs: O?, _ rhs: [(O.Element) -> ()
 }
 
 @discardableResult
-public func =><T: ObservableType, O: DisposableObserverType>(_ lhs: T?, _ rhs: O) -> Disposable where O.Element == T.Element {
+public func =><T: ObservableConvertibleType, O: DisposableObserverType>(_ lhs: T?, _ rhs: O) -> Disposable where O.Element == T.Element {
 	let result = lhs?.asObservable().subscribe(rhs.asObserver()) ?? Disposables.create()
 	rhs.insert(disposable: result)
 	return result
@@ -105,12 +105,12 @@ public func =>(_ lhs: Disposable?, _ rhs: inout Disposable?) {
 	rhs = lhs
 }
 
-public func =><T: ObservableType, O: SchedulerType>(_ lhs: T?, _ rhs: O) -> Observable<T.Element>? {
-	return lhs?.observeOn(rhs)
+public func =><T: ObservableConvertibleType, O: SchedulerType>(_ lhs: T?, _ rhs: O) -> Observable<T.Element>? {
+    return lhs?.asObservable().observeOn(rhs)
 }
 
-public func ==><O: ObservableType>(_ lhs: O?, _ rhs: @escaping (O.Element) -> ()) -> Disposable {
-	return lhs?.asDriver().drive(onNext: rhs) ?? Disposables.create()
+public func ==><O: ObservableConvertibleType>(_ lhs: O?, _ rhs: @escaping (O.Element) -> ()) -> Disposable {
+    return lhs?.asObservable().asDriver().drive(onNext: rhs) ?? Disposables.create()
 }
 
 @discardableResult
@@ -122,19 +122,19 @@ public func ==><O: DisposableObservableType>(_ lhs: O?, _ rhs: @escaping (O.Elem
 	return Disposables.create()
 }
 
-public func ==><T: ObservableType, O: AnyObject>(_ lhs: T?, _ rhs: (O, ReferenceWritableKeyPath<O, T.Element>)) -> Disposable {
+public func ==><T: ObservableConvertibleType, O: AnyObject>(_ lhs: T?, _ rhs: (O, ReferenceWritableKeyPath<O, T.Element>)) -> Disposable {
 	let deallocated = Reactive(rhs.0).deallocated
-	return lhs?.takeUntil(deallocated).asDriver().drive(WeakRef(object: rhs.0, keyPath: rhs.1).asObserver()) ?? Disposables.create()
+    return lhs?.asObservable().takeUntil(deallocated).asDriver().drive(WeakRef(object: rhs.0, keyPath: rhs.1).asObserver()) ?? Disposables.create()
 }
 
-public func ==><T: ObservableType, O: AnyObject>(_ lhs: T?, _ rhs:  (O, (O) -> (T.Element) -> ())) -> Disposable {
+public func ==><T: ObservableConvertibleType, O: AnyObject>(_ lhs: T?, _ rhs:  (O, (O) -> (T.Element) -> ())) -> Disposable {
     let deallocated = Reactive(rhs.0).deallocated
-    return lhs?.takeUntil(deallocated).asDriver().drive(Reactive(rhs.0).weak(method: rhs.1)) ?? Disposables.create()
+    return lhs?.asObservable().takeUntil(deallocated).asDriver().drive(Reactive(rhs.0).weak(method: rhs.1)) ?? Disposables.create()
 }
 
-public func ==><T: ObservableType, O: AnyObject>(_ lhs: T?, _ rhs:  (O, (O) -> () -> ())) -> Disposable where T.Element == Void {
+public func ==><T: ObservableConvertibleType, O: AnyObject>(_ lhs: T?, _ rhs:  (O, (O) -> () -> ())) -> Disposable where T.Element == Void {
     let deallocated = Reactive(rhs.0).deallocated
-    return lhs?.takeUntil(deallocated).asDriver().drive(Reactive(rhs.0).weak(method: rhs.1)) ?? Disposables.create()
+    return lhs?.asObservable().takeUntil(deallocated).asDriver().drive(Reactive(rhs.0).weak(method: rhs.1)) ?? Disposables.create()
 }
 
 
@@ -148,8 +148,8 @@ public func ==><T: DisposableObservableType, O: AnyObject>(_ lhs: T?, _ rhs: (O,
 	return Disposables.create()
 }
 
-public func ==><T: ObservableType, O: ObserverType>(_ lhs: T?, _ rhs: O) -> Disposable where O.Element == T.Element {
-	return lhs?.asDriver().drive(rhs) ?? Disposables.create()
+public func ==><T: ObservableConvertibleType, O: ObserverType>(_ lhs: T?, _ rhs: O) -> Disposable where O.Element == T.Element {
+    return lhs?.asObservable().asDriver().drive(rhs) ?? Disposables.create()
 }
 
 @discardableResult
@@ -162,7 +162,7 @@ public func ==><T: DisposableObservableType, O: ObserverType>(_ lhs: T?, _ rhs: 
 }
 
 @discardableResult
-public func ==><T: ObservableType, O: DisposableObserverType>(_ lhs: T?, _ rhs: O) -> Disposable where O.Element == T.Element {
+public func ==><T: ObservableConvertibleType, O: DisposableObserverType>(_ lhs: T?, _ rhs: O) -> Disposable where O.Element == T.Element {
 	let result = lhs?.asObservable().asDriver().drive(rhs.asObserver()) ?? Disposables.create()
 	rhs.insert(disposable: result)
 	return result
@@ -185,13 +185,13 @@ fileprivate func bind<Element: Equatable>(_ lO: Observable<Element>, _ rO: Obser
 	return Disposables.create(d1, d2, d3, d4)
 }
 
-public func <=><T: ObservableType & ObserverType, O: ObservableType & ObserverType>(_ lhs: T?, _ rhs: O?) -> Disposable where O.Element == T.Element, T.Element: Equatable {
+public func <=><T: ObservableConvertibleType & ObserverType, O: ObservableConvertibleType & ObserverType>(_ lhs: T?, _ rhs: O?) -> Disposable where O.Element == T.Element, T.Element: Equatable {
 	guard let l = lhs, let r = rhs else { return Disposables.create() }
 	return bind(l.asObservable(), r.asObservable(), l.asObserver(), r.asObserver())
 }
 
 @discardableResult
-public func <=><T: ObservableType & DisposableObserverType, O: ObservableType & ObserverType>(_ lhs: T?, _ rhs: O?) -> Disposable where O.Element == T.Element, T.Element: Equatable {
+public func <=><T: ObservableConvertibleType & DisposableObserverType, O: ObservableConvertibleType & ObserverType>(_ lhs: T?, _ rhs: O?) -> Disposable where O.Element == T.Element, T.Element: Equatable {
 	guard let l = lhs, let r = rhs else { return Disposables.create() }
 	let result = bind(l.asObservable(), r.asObservable(), l.asObserver(), r.asObserver())
 	l.insert(disposable: result)
@@ -199,7 +199,7 @@ public func <=><T: ObservableType & DisposableObserverType, O: ObservableType & 
 }
 
 @discardableResult
-public func <=><T: ObservableType & ObserverType, O: ObservableType & DisposableObserverType>(_ lhs: T?, _ rhs: O?) -> Disposable where O.Element == T.Element, T.Element: Equatable {
+public func <=><T: ObservableConvertibleType & ObserverType, O: ObservableConvertibleType & DisposableObserverType>(_ lhs: T?, _ rhs: O?) -> Disposable where O.Element == T.Element, T.Element: Equatable {
 	guard let l = lhs, let r = rhs else { return Disposables.create() }
 	let result = bind(l.asObservable(), r.asObservable(), l.asObserver(), r.asObserver())
 	r.insert(disposable: result)
@@ -207,7 +207,7 @@ public func <=><T: ObservableType & ObserverType, O: ObservableType & Disposable
 }
 
 @discardableResult
-public func <=><T: ObservableType & DisposableObserverType, O: ObservableType & DisposableObserverType>(_ lhs: T?, _ rhs: O?) -> Disposable where O.Element == T.Element, T.Element: Equatable {
+public func <=><T: ObservableConvertibleType & DisposableObserverType, O: ObservableConvertibleType & DisposableObserverType>(_ lhs: T?, _ rhs: O?) -> Disposable where O.Element == T.Element, T.Element: Equatable {
 	guard let l = lhs, let r = rhs else { return Disposables.create() }
 	let result = bind(l.asObservable(), r.asObservable(), l.asObserver(), r.asObserver())
 	r.insert(disposable: result)
@@ -224,13 +224,13 @@ fileprivate func drive<Element: Equatable>(_ lO: Observable<Element>, _ rO: Obse
 	return Disposables.create(d1, d2, d3, d4)
 }
 
-public func <==><T: ObservableType & ObserverType, O: ObservableType & ObserverType>(_ lhs: T?, _ rhs: O?) -> Disposable where O.Element == T.Element, T.Element: Equatable {
+public func <==><T: ObservableConvertibleType & ObserverType, O: ObservableConvertibleType & ObserverType>(_ lhs: T?, _ rhs: O?) -> Disposable where O.Element == T.Element, T.Element: Equatable {
 	guard let l = lhs, let r = rhs else { return Disposables.create() }
 	return drive(l.asObservable(), r.asObservable(), l.asObserver(), r.asObserver())
 }
 
 @discardableResult
-public func <==><T: ObservableType & DisposableObserverType, O: ObservableType & ObserverType>(_ lhs: T?, _ rhs: O?) -> Disposable where O.Element == T.Element, T.Element: Equatable {
+public func <==><T: ObservableConvertibleType & DisposableObserverType, O: ObservableConvertibleType & ObserverType>(_ lhs: T?, _ rhs: O?) -> Disposable where O.Element == T.Element, T.Element: Equatable {
 	guard let l = lhs, let r = rhs else { return Disposables.create() }
 	let result = drive(l.asObservable(), r.asObservable(), l.asObserver(), r.asObserver())
 	l.insert(disposable: result)
@@ -238,7 +238,7 @@ public func <==><T: ObservableType & DisposableObserverType, O: ObservableType &
 }
 
 @discardableResult
-public func <==><T: ObservableType & ObserverType, O: ObservableType & DisposableObserverType>(_ lhs: T?, _ rhs: O?) -> Disposable where O.Element == T.Element, T.Element: Equatable {
+public func <==><T: ObservableConvertibleType & ObserverType, O: ObservableConvertibleType & DisposableObserverType>(_ lhs: T?, _ rhs: O?) -> Disposable where O.Element == T.Element, T.Element: Equatable {
 	guard let l = lhs, let r = rhs else { return Disposables.create() }
 	let result = drive(l.asObservable(), r.asObservable(), l.asObserver(), r.asObserver())
 	r.insert(disposable: result)
@@ -246,7 +246,7 @@ public func <==><T: ObservableType & ObserverType, O: ObservableType & Disposabl
 }
 
 @discardableResult
-public func <==><T: ObservableType & DisposableObserverType, O: ObservableType & DisposableObserverType>(_ lhs: T?, _ rhs: O?) -> Disposable where O.Element == T.Element, T.Element: Equatable {
+public func <==><T: ObservableConvertibleType & DisposableObserverType, O: ObservableConvertibleType & DisposableObserverType>(_ lhs: T?, _ rhs: O?) -> Disposable where O.Element == T.Element, T.Element: Equatable {
 	guard let l = lhs, let r = rhs else { return Disposables.create() }
 	let result = drive(l.asObservable(), r.asObservable(), l.asObserver(), r.asObserver())
 	r.insert(disposable: result)

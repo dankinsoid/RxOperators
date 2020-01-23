@@ -8,27 +8,38 @@
 import RxSwift
 import RxCocoa
 
+@dynamicMemberLookup
 @propertyWrapper
 public final class ValueSubject<Element>: DisposableObservableType, DisposableObserverType {
     
-    public var wrappedValue: Element {
-        get { value }
-        set { value = newValue }
-    }
     public var value: Element {
-        get { return lock.protect { _value } }
+        get { wrappedValue }
+        set { wrappedValue = newValue }
+    }
+    public var projectedValue: ValueSubject<Element> { self }
+    public var wrappedValue: Element {
+        get { return lock.protect { val } }
         set {
             setValue(newValue)
             publishSubject.onNext(newValue)
         }
     }
-    private let disposeBag = DisposeBag()
+    private let disposeBag: DisposeBag
     private let lock = NSRecursiveLock()
-    private var _value: Element
+    @Value private var val: Element
     private let publishSubject = PublishSubject<Element>()
     
-    public init(wrappedValue initialValue: Element) {
-        _value = initialValue
+    public convenience init(wrappedValue initialValue: Element) {
+        self.init(wrappedValue: initialValue, bag: DisposeBag())
+    }
+    
+    public convenience init(wrappedValue initialValue: Element, bag: DisposeBag) {
+        self.init(.wrap(initialValue), bag: bag)
+    }
+    
+    fileprivate init(_ value: Value<Element>, bag: DisposeBag) {
+        _val = value
+        disposeBag = bag
     }
     
     public convenience init(_ value: Element) {
@@ -39,8 +50,25 @@ public final class ValueSubject<Element>: DisposableObservableType, DisposableOb
     public func subscribe<O: ObserverType>(_ observer: O) -> Disposable where Element == O.Element {
         let result = publishSubject.subscribe(observer)
         insert(disposable: result)
-        observer.onNext(value)
+        observer.onNext(wrappedValue)
         return result
+    }
+    
+    public subscript<T>(dynamicMember keyPath: WritableKeyPath<Element, T>) -> ValueSubject<T> {
+        ValueSubject<T>(
+            Value<T>(
+                get: { self.wrappedValue[keyPath: keyPath] },
+                set: {
+                    var val = self.val
+                    val[keyPath: keyPath] = $0
+                    self.wrappedValue = val
+                }),
+            bag: disposeBag
+        )
+    }
+    
+    public subscript<T>(dynamicMember keyPath: KeyPath<Element, T>) -> Observable<T> {
+        self.map { $0[keyPath: keyPath] }
     }
     
     public func asNotSharing() -> AnyObserver<Element> {
@@ -52,7 +80,7 @@ public final class ValueSubject<Element>: DisposableObservableType, DisposableOb
     
     public func on(_ event: Event<Element>) {
         guard case .next(let newValue) = event else { return }
-        value = newValue
+        wrappedValue = newValue
     }
     
     public func insert(disposable: Disposable) {
@@ -60,7 +88,7 @@ public final class ValueSubject<Element>: DisposableObservableType, DisposableOb
     }
     
     private func setValue(_ newValue: Element) {
-        lock.protect { _value = newValue }
+        lock.protect { val = newValue }
     }
     
 }
@@ -79,4 +107,18 @@ extension ValueSubject: Encodable where Element: Encodable {
         try value.encode(to: encoder)
     }
     
+}
+
+@propertyWrapper
+fileprivate struct Value<T> {
+    let get: () -> T
+    let set: (T) -> ()
+    static func wrap(_ value: T) -> Value {
+        var val = value
+        return Value(get: { val }, set: { val = $0 })
+    }
+    var wrappedValue: T {
+        get { get() }
+        set { set(newValue) }
+    }
 }
