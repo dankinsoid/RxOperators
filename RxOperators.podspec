@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'RxOperators'
-  s.version          = '1.0.6'
+  s.version          = '1.0.7'
   s.summary          = 'A short description of RxOperators.'
   s.description      = <<-DESC
 TODO: Add long description of the pod here.
@@ -20,8 +20,8 @@ TODO: Add long description of the pod here.
   s.author           = { 'Voidilov' => 'voidilov@gmail.com' }
   s.source           = { :git => 'https://github.com/dankinsoid/RxOperators.git', :tag => s.version.to_s }
 
-  s.ios.deployment_target = '10.0'
-  s.swift_versions = '5.0'
+  s.ios.deployment_target = '11.0'
+  s.swift_versions = '5.1'
   s.source_files = 'RxOperators/Classes/**/*'
   s.dependency 'RxSwift', '~> 5.0'
   s.dependency 'RxCocoa', '~> 5.0'
