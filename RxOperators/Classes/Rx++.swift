@@ -8,7 +8,7 @@
 
 import RxSwift
 import RxCocoa
-import VD
+import VDKit
 
 extension PrimitiveSequenceType where Self.Trait == SingleTrait {
 	
