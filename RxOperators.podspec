@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'RxOperators'
-  s.version          = '1.0.9'
+  s.version          = '1.0.10'
   s.summary          = 'A short description of RxOperators.'
   s.description      = <<-DESC
 TODO: Add long description of the pod here.
@@ -22,7 +22,7 @@ TODO: Add long description of the pod here.
 
   s.ios.deployment_target = '11.0'
   s.swift_versions = '5.1'
-  s.source_files = 'RxOperators/Classes/**/*'
+  s.source_files = 'Sources/RxOperators/**/*'
   s.dependency 'RxSwift', '~> 5.0'
   s.dependency 'RxCocoa', '~> 5.0'
   s.dependency 'VD'
