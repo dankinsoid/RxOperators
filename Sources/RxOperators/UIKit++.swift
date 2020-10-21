@@ -47,31 +47,6 @@ extension Reactive where Base: UIResponder {
 	
 }
 
-extension Reactive where Base: View {
-	
-	public func gesture() -> ControlEvent<UILongPressGestureRecognizer> {
-		longPressGesture { recognizer, _ in
-			recognizer.minimumPressDuration = 0
-		}
-	}
-	
-}
-
-extension ObservableConvertibleType where Element: GestureRecognizer {
-	
-	public func asRelativeLocation(in view: TargetView = .view) -> Observable<Point> {
-		asObservable().map { recognizer in
-			guard let view = view.targetView(for: recognizer) else { return .zero }
-			let location = recognizer.location(in: view)
-			return CGPoint(
-				x: view.frame.width == 0 ? 0 : location.x / view.frame.width,
-				y: view.frame.height == 0 ? 0 : location.x / view.frame.height
-			)
-		}
-	}
-	
-}
-
 extension Reactive where Base: UISearchBar {
 	
 	public var changes: ControlEvent<String> {
