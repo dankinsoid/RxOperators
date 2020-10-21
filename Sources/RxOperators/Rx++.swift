@@ -243,34 +243,6 @@ extension ObservableType {
 	public var mp: RxPropertyMapper<Self, Element> { RxPropertyMapper(self, for: \.self) }
 }
 
-extension Reactive where Base: UIView {
-	
-	public var transform: Binder<CGAffineTransform> {
-		Binder(base, binding: { $0.transform = $1 })
-	}
-	
-}
-
-extension Binder where Value == CGAffineTransform {
-	
-	public func scale() -> AnyObserver<CGFloat> {
-		mapObserver { CGAffineTransform(scaleX: $0, y: $0) }
-	}
-	
-	public func scale() -> AnyObserver<CGSize> {
-		mapObserver { CGAffineTransform(scaleX: $0.width, y: $0.height) }
-	}
-	
-	public func rotation() -> AnyObserver<CGFloat> {
-		mapObserver { CGAffineTransform(rotationAngle: $0) }
-	}
-	
-	public func translation() -> AnyObserver<CGPoint> {
-		mapObserver { CGAffineTransform(translationX: $0.x, y: $0.y) }
-	}
-	
-}
-
 extension ObservableType {
 	
 	public func map<T>(_ keyPath: KeyPath<Element, T>) -> Observable<T> {
@@ -295,18 +267,6 @@ extension Reactive where Base: AnyObject {
 }
 
 fileprivate var disposeBagKey = "ReactiveDisposeBagKey"
-
-extension ObserverType {
-	
-	public func animate(_ duration: TimeInterval, options: UIView.AnimationOptions = []) -> AnyObserver<Element> {
-		AnyObserver { event in
-			UIView.animate(duration, options: options, {
-				self.on(event)
-			})
-		}
-	}
-	
-}
 
 extension ObservableType where Element: Collection {
 	
