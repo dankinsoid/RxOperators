@@ -473,3 +473,21 @@ extension ObservableConvertibleType {
 	}
 	
 }
+
+extension ClosedRange where Bound: FloatingPoint {
+	
+	public func split(count: Int) -> [Bound] {
+		guard count > 0 else { return [] }
+		guard count > 1 else { return [lowerBound] }
+		guard count > 2 else { return [lowerBound, upperBound] }
+		let delta = (upperBound - lowerBound) / Bound(count)
+		var result: [Bound] = []
+		result.append(lowerBound)
+		for _ in 1..<(count - 1) {
+			result.append(result.last! + delta)
+		}
+		result.append(upperBound)
+		return result
+	}
+	
+}
