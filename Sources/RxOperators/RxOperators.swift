@@ -5,12 +5,14 @@
 //
 
 import Foundation
+import VDKit
 import RxSwift
 import RxCocoa
 
 precedencegroup RxPrecedence {
 	associativity: left
 	higherThan: FunctionArrowPrecedence
+	lowerThan: TernaryPrecedence
 }
 
 infix operator <=> : RxPrecedence
@@ -296,6 +298,24 @@ public func +=<O: Disposable>(_ lhs: inout Cancelable, _ rhs: O) {
 	lhs = lhs + rhs
 }
 
-public func |<T: ObservableType, O: ObservableType>(_ lhs: T, _ rhs: O) -> Observable<(T.Element, O.Element)> {
-	return Observable.combineLatest(lhs, rhs)
+public func ?? <O: ObservableType>(_ lhs: O, _ rhs: @escaping @autoclosure () -> T.Element.Wrapped) -> Observable<T.Element.Wrapped> where O.Element: OptionalProtocol {
+	lhs.map { $0.asOptional() ?? rhs() }
+}
+
+public func &<T1: ObservableConvertibleType, T2: ObservableConvertibleType>(_ lhs: T1, _ rhs: T2) -> (T1, T2)
+{ (lhs, rhs) }
+
+public func &<T1: ObservableConvertibleType,
+							T2: ObservableConvertibleType>(_ lhs: T1, _ rhs: T2) -> Observable<(T1.Element, T2.Element)>
+{ Observable.combineLatest(lhs.asObservable(), rhs.asObservable()) }
+
+public func &<T1: ObservableConvertibleType,
+							T2: ObservableConvertibleType,
+							T3: ObservableConvertibleType>(_ lhs: (T1, T2), _ rhs: T3) -> (T1,T2,T3)
+{ (lhs.0, lhs.1, rhs) }
+
+public func &<T1: ObservableConvertibleType,
+							T2: ObservableConvertibleType,
+							T3: ObservableConvertibleType>(_ lhs: (T1, T2), _ rhs: T3) -> Observable<(T1.Element,T2.Element, T3.Element)> {
+	Observable.combineLatest(lhs.0.asObservable(), lhs.1.asObservable(), rhs.asObservable())
 }
