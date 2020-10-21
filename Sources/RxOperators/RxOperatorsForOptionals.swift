@@ -99,21 +99,7 @@ public func =>><A: ObservableConvertibleType, O: ObserverType>(_ lhs: A, _ rhs: 
 	return lhs.asObservable().distinctUntilChanged() => rhs
 }
 
-public func =>><Element, O: ObserverType>(_ lhs: StateDriver<Element>, _ rhs: O?) -> Disposable where O.Element == Element?, Element: Equatable {
-	guard let rhs = rhs else { return Disposables.create() }
-	return lhs.skipEqual() => rhs
-}
-
 public func =>><A: ObservableConvertibleType, O: ObserverType>(_ lhs: A, _ rhs: O?) -> Disposable where O.Element: Equatable, O.Element == A.Element? {
 	guard let rhs = rhs else { return Disposables.create() }
 	return lhs.asObservable().distinctUntilChanged() => rhs
-}
-
-public func =>><V: ViewProtocol, O: ObservableConvertibleType>(_ lhs: O, _ rhs: Reactive<V>?) -> Disposable where O.Element == V.Properties, V.Properties: Equatable {
-	rhs?.base.bind(lhs.asObservable().distinctUntilChanged()) ?? Disposables.create()
-}
-
-public func =>><O: ObserverType>(_ lhs: StateDriver<O.Element>, _ rhs: O?) -> Disposable where O.Element: Equatable {
-	guard let rhs = rhs else { return Disposables.create() }
-	return lhs.skipEqual() => rhs
 }

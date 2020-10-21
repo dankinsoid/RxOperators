@@ -55,29 +55,7 @@ extension Reactive where Base: UISearchBar {
 		let third = cancelButtonClicked.map { "" }
 		return ControlEvent(events: Observable.merge(first, second, third))
 	}
-	
-}
 
-extension Reactive where Base: UIButton {
-	
-	public func update(animated: Bool = true) -> Binder<ButtonProperties> {
-		let updates: (Base, ButtonProperties) -> () = { target, properties in
-			target.setTitle(properties.title, for: .normal)
-			target.setImage(properties.icon, for: .normal)
-			target.isEnabled = properties.isEnabled
-		}
-		if animated {
-			return Binder(base, binding: updates)
-		} else {
-			return Binder(base) { target, properties in
-				UIView.performWithoutAnimation {
-					updates(target, properties)
-					target.layoutIfNeeded()
-				}
-			}
-		}
-	}
-	
 }
 
 extension Reactive where Base: UIStackView {
@@ -94,12 +72,6 @@ extension Reactive where Base: UIStackView {
 		}
 	}
 	
-	public func update<V: UIView & ViewProtocol>(create: @escaping () -> V) -> Binder<[V.Properties]> {
-		update(create: create) { value, view, _ in
-			view.set(state: value)
-		}
-	}
-	
 }
 
 extension Reactive where Base: UIView {
@@ -109,4 +81,3 @@ extension Reactive where Base: UIView {
 	}
 	
 }
-
