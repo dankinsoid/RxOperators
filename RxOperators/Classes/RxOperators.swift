@@ -17,6 +17,7 @@ infix operator <=> : RxPrecedence
 infix operator <==> : RxPrecedence
 infix operator => : RxPrecedence
 infix operator ==> : RxPrecedence
+infix operator =>>: RxPrecedence
 
 public func =><T: ObservableConvertibleType, O: ObserverType>(_ lhs: T?, _ rhs: O) -> Disposable where O.Element == T.Element {
     return lhs?.asObservable().subscribe(rhs.asObserver()) ?? Disposables.create()
@@ -252,4 +253,49 @@ public func <==><T: ObservableConvertibleType & DisposableObserverType, O: Obser
 	r.insert(disposable: result)
 	l.insert(disposable: result)
 	return result
+}
+
+public func =>><A: ObservableConvertibleType>(_ lhs: A, _ rhs: @escaping (A.Element) -> ()) -> Disposable where A.Element: Equatable {
+	lhs.asObservable().distinctUntilChanged() => rhs
+}
+
+public prefix func !<O: ObservableConvertibleType>(_ rhs: O) -> Observable<Bool> where O.Element == Bool {
+	rhs.asObservable().map { !$0 }
+}
+
+public prefix func !<O: ObserverType>(_ rhs: O) -> AnyObserver<Bool> where O.Element == Bool {
+	rhs.mapObserver({ !$0 })
+}
+
+public func +<T: ObservableType, O: ObservableType>(_ lhs: T, _ rhs: O) -> Observable<O.Element> where O.Element == T.Element {
+	return Observable.merge([lhs.asObservable(), rhs.asObservable()])
+}
+
+public func +<T: ObserverType, O: ObserverType>(_ lhs: T, _ rhs: O) -> AnyObserver<O.Element> where O.Element == T.Element {
+	let o1 = lhs.asObserver()
+	let o2 = rhs.asObserver()
+	return AnyObserver {
+		o1.on($0)
+		o2.on($0)
+	}
+}
+
+public func +(_ lhs: Disposable, _ rhs: Disposable) -> Cancelable {
+	return Disposables.create(lhs, rhs)
+}
+
+public func +=<O: ObservableType>(_ lhs: inout Observable<O.Element>, _ rhs: O) {
+	lhs = Observable.merge([lhs.asObservable(), rhs.asObservable()])
+}
+
+public func +=<O: ObserverType>(_ lhs: inout AnyObserver<O.Element>, _ rhs: O) {
+	lhs = lhs + rhs
+}
+
+public func +=<O: Disposable>(_ lhs: inout Cancelable, _ rhs: O) {
+	lhs = lhs + rhs
+}
+
+public func |<T: ObservableType, O: ObservableType>(_ lhs: T, _ rhs: O) -> Observable<(T.Element, O.Element)> {
+	return Observable.combineLatest(lhs, rhs)
 }
