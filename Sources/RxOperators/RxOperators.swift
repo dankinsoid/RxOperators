@@ -298,7 +298,7 @@ public func +=<O: Disposable>(_ lhs: inout Cancelable, _ rhs: O) {
 	lhs = lhs + rhs
 }
 
-public func ?? <O: ObservableType>(_ lhs: O, _ rhs: @escaping @autoclosure () -> T.Element.Wrapped) -> Observable<T.Element.Wrapped> where O.Element: OptionalProtocol {
+public func ?? <O: ObservableType>(_ lhs: O, _ rhs: @escaping @autoclosure () -> O.Element.Wrapped) -> Observable<O.Element.Wrapped> where O.Element: OptionalProtocol {
 	lhs.map { $0.asOptional() ?? rhs() }
 }
 
