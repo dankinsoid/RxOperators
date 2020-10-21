@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'RxOperators'
-  s.version          = '1.0.15'
+  s.version          = '1.0.16'
   s.summary          = 'A short description of RxOperators.'
   s.description      = <<-DESC
 TODO: Add long description of the pod here.
