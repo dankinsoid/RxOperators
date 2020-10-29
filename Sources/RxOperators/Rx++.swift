@@ -186,19 +186,6 @@ fileprivate final class Ref<T> {
 	init(_ value: T) { self.value = value }
 }
 
-extension RxTimeInterval {
-	public var seconds: TimeInterval? {
-		switch self {
-		case .seconds(let result):      return TimeInterval(result)
-		case .milliseconds(let result): return TimeInterval(result) * 1_000
-		case .microseconds(let result): return TimeInterval(result) * 1_000_000
-		case .nanoseconds(let result):  return TimeInterval(result) * 1_000_000_000
-		case .never:                    return nil
-		@unknown default:								return nil
-		}
-	}
-}
-
 @dynamicMemberLookup
 public struct RxPropertyMapper<Base: ObservableType, Element>: ObservableType {
 	private let base: Base
@@ -415,24 +402,6 @@ extension ObservableConvertibleType {
 	
 }
 
-extension ClosedRange where Bound: FloatingPoint {
-	
-	public func split(count: Int) -> [Bound] {
-		guard count > 0 else { return [] }
-		guard count > 1 else { return [lowerBound] }
-		guard count > 2 else { return [lowerBound, upperBound] }
-		let delta = (upperBound - lowerBound) / Bound(count)
-		var result: [Bound] = []
-		result.append(lowerBound)
-		for _ in 1..<(count - 1) {
-			result.append(result.last! + delta)
-		}
-		result.append(upperBound)
-		return result
-	}
-	
-}
-
 extension ObservableConvertibleType where Element == String {
 	
 	public func smooth(_ duration: TimeInterval = 0.3, scheduler: SchedulerType = MainScheduler.asyncInstance) -> Observable<Element> {
@@ -491,6 +460,18 @@ extension String {
 		}
 		result[result.count - 1] = to
 		return result
+	}
+	
+ 	func commonSuffix(with aString: String) -> String {
+		var suffix = ""
+		var first = self
+		var second = aString
+		while let symbol = first.last, !second.isEmpty, first.last == second.last {
+			first.removeLast()
+			second.removeLast()
+			suffix.insert(symbol, at: suffix.startIndex)
+		}
+		return suffix
 	}
 	
 }
@@ -591,12 +572,12 @@ extension RxTimeInterval {
 	
 	public var seconds: TimeInterval {
 		switch self {
-		case .seconds(let seconds):			return TimeInterval(seconds)
+		case .seconds(let seconds):		return TimeInterval(seconds)
 		case .milliseconds(let milli):	return TimeInterval(milli) / 1_000
 		case .microseconds(let micro):	return TimeInterval(micro) / 1_000_000
-		case .nanoseconds(let nano):		return TimeInterval(nano) / 1_000_000_000
-		case .never:										return .infinity
-		@unknown default:								return 0
+		case .nanoseconds(let nano):	return TimeInterval(nano) / 1_000_000_000
+		case .never:					return .infinity
+		@unknown default:				return 0
 		}
 	}
 	
