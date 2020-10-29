@@ -164,25 +164,6 @@ extension ObservableType {
 	
 }
 
-extension ObservableType where Element: FloatingPoint {
-	
-	public func smooth(duration: Double, interval: Double = 1 / 30, scheduler: SchedulerType = MainScheduler.asyncInstance) -> Observable<Element> {
-		return asObservable()
-			.withLast()
-			.map({ arg -> Observable<Element> in
-				let new = arg.current
-				guard let old = arg.previous, old != new else {
-					return Observable.just(new)
-				}
-				let cnt = Int(duration / interval)
-				let array = new > old ? (old...new).split(count: cnt) : (new...old).split(count: cnt).reversed()
-				return Observable.from(array).interval(.microseconds(Int(interval * 1_000_000)), scheduler: MainScheduler.asyncInstance)
-			})
-			.switchLatest()
-	}
-	
-}
-
 extension Reactive where Base: NSObject {
 	
 	func observe<T>(_ keyPath: KeyPath<Base, T>) -> Observable<T> {
@@ -206,7 +187,7 @@ fileprivate final class Ref<T> {
 }
 
 extension RxTimeInterval {
-	var seconds: TimeInterval? {
+	public var seconds: TimeInterval? {
 		switch self {
 		case .seconds(let result):      return TimeInterval(result)
 		case .milliseconds(let result): return TimeInterval(result) * 1_000
@@ -270,7 +251,7 @@ fileprivate var disposeBagKey = "ReactiveDisposeBagKey"
 
 extension ObservableType where Element: Collection {
 	
-	func skipEqualSize() -> Observable<Element> {
+	public func skipEqualSize() -> Observable<Element> {
 		distinctUntilChanged { $0.count == $1.count }
 	}
 	
@@ -450,4 +431,222 @@ extension ClosedRange where Bound: FloatingPoint {
 		return result
 	}
 	
+}
+
+extension ObservableConvertibleType where Element == String {
+	
+	public func smooth(_ duration: TimeInterval = 0.3, scheduler: SchedulerType = MainScheduler.asyncInstance) -> Observable<Element> {
+		let interval: RxTimeInterval = .milliseconds(30)
+		return smooth(interval: interval, count: Int(duration / interval.seconds), scheduler: scheduler)
+	}
+	
+	public func smooth(interval: RxTimeInterval, count: Int, scheduler: SchedulerType = MainScheduler.asyncInstance) -> Observable<Element> {
+		asObservable()
+		.distinctUntilChanged()
+		.smooth(
+			rule: {
+				$0.smooth(to: $1, count: $2)
+			},
+			interval: interval,
+			count: count,
+			scheduler: scheduler
+		)
+	}
+	
+}
+
+extension String {
+	
+	func smooth(to: String, count: Int) -> [String] {
+		guard count > 2 else { return [self, to].suffix(max(0, count)) }
+		guard !to.isEmpty || !isEmpty else {
+			return [String](repeating: "", count: count)
+		}
+		guard to != self else {
+			return [String](repeating: to, count: count)
+		}
+		var result = [self]
+		let commonPr = commonPrefix(with: to)
+		let commonSfCount = max(0, min(commonSuffix(with: to).count, min(self.count, to.count) - commonPr.count))
+		for i in commonPr.count..<(max(self.count, to.count) - commonSfCount) {
+			var last = result[result.count - 1]
+			if i < last.count, i < to.count {
+				last[.first + i] = to[.first + i]
+			} else if i < to.count {
+				last.append(to[.first + i]!)
+			} else if i < last.count {
+				_ = last.remove(at: .first + i)
+			}
+			result.append(last)
+		}
+		if result.count < count {
+			for _ in 0..<(count - result.count) {
+				let i = Int.random(in: 0..<result.count)
+				result.insert(result[i], at: i)
+			}
+		} else if count < result.count {
+			for _ in 0..<(result.count - count) {
+				result.remove(at: .random(in: 0..<result.count))
+			}
+		}
+		result[result.count - 1] = to
+		return result
+	}
+	
+}
+
+extension ObservableConvertibleType where Element: FloatingPoint {
+	
+	public func smooth(_ duration: RxTimeInterval = .seconds(1), scheduler: SchedulerType = MainScheduler.asyncInstance) -> Observable<Element> {
+		let interval: RxTimeInterval = .milliseconds(20)
+		return smooth(interval: interval, count: Int(duration.seconds / interval.seconds), scheduler: scheduler)
+	}
+	
+	public func smooth(interval: RxTimeInterval, count: Int, scheduler: SchedulerType = MainScheduler.asyncInstance) -> Observable<Element> {
+		asObservable()
+		.distinctUntilChanged()
+		.smooth(
+			rule: {
+				let isGrow = $0 < $1
+				let range = isGrow ? $0...$1 : $1...$0
+				return isGrow ? range.split(count: $2) : range.split(count: $2).reversed()
+			},
+			interval: interval,
+			count: count,
+			scheduler: scheduler
+		)
+	}
+	
+}
+
+extension ObservableConvertibleType {
+	
+	public func smooth<F: FloatingPoint>(
+		_ duration: RxTimeInterval = .seconds(1),
+		scheduler: SchedulerType = MainScheduler.asyncInstance,
+		float: @escaping (Element) -> F,
+		value: @escaping (F, Element) -> Element,
+		condition: @escaping (Element, Element) -> Bool = { _, _ in true }
+	) -> Observable<Element> {
+		let interval: RxTimeInterval = .milliseconds(20)
+		return smooth(interval: interval, count: Int(duration.seconds / interval.seconds), scheduler: scheduler, float: float, value: value, condition: condition)
+	}
+	
+	public func smooth<F: FloatingPoint>(interval: RxTimeInterval, count: Int, scheduler: SchedulerType = MainScheduler.asyncInstance, float: @escaping (Element) -> F, value: @escaping (F, Element) -> Element, condition: @escaping (Element, Element) -> Bool = { _, _ in true }) -> Observable<Element> {
+		smooth(
+			rule: { f, s, count in
+				let (first, second) = (float(f), float(s))
+				let isGrow = first < second
+				let range = isGrow ? first...second : second...first
+				return (isGrow ? range.split(count: count) : range.split(count: count).reversed()).map { value($0, s) }
+			},
+			interval: interval,
+			count: count,
+			scheduler: scheduler,
+			condition: condition
+		)
+	}
+	
+}
+
+extension ObservableConvertibleType {
+	
+	public func smooth(rule: @escaping (Element, Element, Int) -> [Element], interval: RxTimeInterval, count: Int, scheduler: SchedulerType = MainScheduler.asyncInstance, condition: @escaping (Element, Element) -> Bool = { _, _ in true }) -> Observable<Element> {
+		asObservable()
+			.scan([], accumulator: { $0.suffix(1) + [$1] })
+			.flatMap { list -> Observable<Element> in
+				guard list.count == 2 else { return .just(list[0]) }
+				guard condition(list[0], list[1]) else { return .just(list[1]) }
+				let array = rule(list[0], list[1], count)
+				return Observable<Int>
+					.interval(interval, scheduler: scheduler)
+					.take(array.count)
+					.map { array[$0] }
+			}
+	}
+	
+	public func smooth(rule: @escaping (Element, Element, Int) -> [Element], duration: RxTimeInterval = .seconds(1), scheduler: SchedulerType = MainScheduler.asyncInstance, condition: @escaping (Element, Element) -> Bool = { _, _ in true }) -> Observable<Element> {
+		let interval: RxTimeInterval = .milliseconds(20)
+		return smooth(rule: rule, interval: interval, count: Int(duration.seconds / interval.seconds), scheduler: scheduler, condition: condition)
+	}
+	
+}
+
+extension ClosedRange where Bound: FloatingPoint {
+	
+	public func split(count: Int) -> [Bound] {
+		guard count > 2 else { return [lowerBound, upperBound].suffix(count) }
+		var result: [Bound] = [lowerBound]
+		let delta = (upperBound - lowerBound) / Bound(count)
+		for _ in 2..<count {
+			result.append(result[result.count - 1] + delta)
+		}
+		result.append(upperBound)
+		return result
+	}
+	
+}
+
+extension RxTimeInterval {
+	
+	public var seconds: TimeInterval {
+		switch self {
+		case .seconds(let seconds):			return TimeInterval(seconds)
+		case .milliseconds(let milli):	return TimeInterval(milli) / 1_000
+		case .microseconds(let micro):	return TimeInterval(micro) / 1_000_000
+		case .nanoseconds(let nano):		return TimeInterval(nano) / 1_000_000_000
+		case .never:										return .infinity
+		@unknown default:								return 0
+		}
+	}
+	
+}
+
+extension ObservableType {
+	
+	public func onNext(_ action: @escaping (Element) throws -> Void) -> Observable<Element> {
+		self.do(onNext: action)
+	}
+	
+	public func afterNext(_ action: @escaping (Element) throws -> Void) -> Observable<Element> {
+		self.do(afterNext: action)
+	}
+	
+	public func onError(_ action: @escaping (Error) throws -> Void) -> Observable<Element> {
+		self.do(onError: action)
+	}
+	
+	public func afterError(_ action: @escaping (Error) throws -> Void) -> Observable<Element> {
+		self.do(afterError: action)
+	}
+	
+	public func onCompleted(_ action: @escaping () -> Void) -> Observable<Element> {
+		self.do(onCompleted: action)
+	}
+	
+	public func afterCompleted(_ action: @escaping () -> Void) -> Observable<Element> {
+		self.do(afterCompleted: action)
+	}
+	
+	public func onSubscribe(_ action: @escaping () -> Void) -> Observable<Element> {
+		self.do(onSubscribe: action)
+	}
+	
+	public func onSubscribed(_ action: @escaping () -> Void) -> Observable<Element> {
+		self.do(onSubscribed: action)
+	}
+	
+	public func onDispose(_ action: @escaping () -> Void) -> Observable<Element> {
+		self.do(onDispose: action)
+	}
+	
+	public func `guard`(_ condition: @escaping (Element) throws -> Bool) -> Observable<Element> {
+		self.map {
+			guard try condition($0) else {
+				throw RxError.unknown
+			}
+			return $0
+		}
+	}
+
 }

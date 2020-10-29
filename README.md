@@ -81,17 +81,38 @@ intObservable ==> intObserver => disposeBag
 
 3. Operators `<=>` and `<==>` create bidirectional subscriptions for `Equatable` sequences
 
-4. `DisposableObserverType` and `DisposableObservableType` - protocols for observer and observeables that dispose all subscriptions on deinit, so you don't have to control disposing for each subscription.
+4. Operator `=>>` replaces `.distinctUntilChanged()`
 
-5. `ValueSubject<Element>` - analog of `Variable<Element>` with `DisposeBag` inside.
+5. `DisposableObserverType` and `DisposableObservableType` - protocols for observer and observeables that dispose all subscriptions on deinit, so you don't have to control disposing for each subscription.
 
-6. Some features:
+6. `ValueSubject<Element>` - analog of `Variable<Element>` with `DisposeBag` inside.
+
+7. Some features:
 
 - `skipNil()` operator
-- `compactMap()` operator
+- `or(Bool), .toggle(), !` operators for boolean sequences
 - use `+` and `+=` operator for merging observables, creating disposables, etc
+- `interval(...)` 
+- `withLast() -> Observable<(previous: Element?, current: Element)>`
+- `rx.asDisposeBag`
+- `.mp` - `@dynamicMemberLookup` mapper
+- `asResult() -> Observable<Result<Element, Error>>`
+- `nilIfEmpty`
+- `isEmpty`
+- `isNil`
+- `isNilOrEmpty`
+- `wrap(...), guarantee(...)` static methods on Single to create Single from functions with completions
+- `append(...)`
+- `smooth(...)` methods to smooth changes, example: sequence`[0, 1]` turns to `[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]`
+- `onNext, afterNext, onError, afterError, onCompleted, afterCompleted, onSubscribe, onSubscribed, onDispose` wrappers on `do(...)` operator
+- `guard()`
+- `rx.isFirstResponder`
+- `UIStackView().rx.update(...)`
+- `UIView().rx.transform.scale(), .rotation(), .translation()`
 
 ## Installation
+
+1.  [CocoaPods](https://cocoapods.org)
 
 RxOperators is available through [CocoaPods](https://cocoapods.org). To install
 it, simply add the following line to your Podfile:
@@ -100,6 +121,26 @@ pod 'RxOperators'
 ```
 and run `pod update` from the podfile directory first.
 
+2. [Swift Package Manager](https://github.com/apple/swift-package-manager)
+
+Create a `Package.swift` file.
+```swift
+// swift-tools-version:5.0
+import PackageDescription
+
+let package = Package(
+  name: "SomeProject",
+  dependencies: [
+    .package(url: "https://github.com/dankinsoid/RxOperators.git", from: "1.0.23")
+    ],
+  targets: [
+    .target(name: "SomeProject", dependencies: ["RxOperators"])
+    ]
+)
+```
+```ruby
+$ swift build
+```
 ## Author
 
 Voidilov, voidilov@gmail.com
