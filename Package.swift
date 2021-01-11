@@ -14,7 +14,7 @@ let package = Package(
             targets: ["RxOperators"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/ReactiveX/RxSwift.git", from: "6.0.0"),
+        .package(url: "https://github.com/ReactiveX/RxSwift.git", from: "5.0.0"),
         .package(url: "https://github.com/dankinsoid/VDKit.git", from: "1.0.12")
     ],
     targets: [
