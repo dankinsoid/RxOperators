@@ -17,7 +17,7 @@ extension PrimitiveSequenceType where Self.Trait == SingleTrait {
 	public func subscribe(_ completion: @escaping (Result<Self.Element, Error>) -> ()) -> Disposable {
 		return self.subscribe(
 			onSuccess: { completion(.success($0)) },
-			onError: { completion(.failure($0)) }
+			onFailure: { completion(.failure($0)) }
 		)
 	}
 	
@@ -300,14 +300,7 @@ extension PrimitiveSequence where Trait == SingleTrait {
 	
 	public static func wrap<Failure: Error>(_ function: @escaping (@escaping (Result<Element, Failure>) -> Void) -> Void) -> Single<Element> {
 		create { block -> Disposable in
-			function {
-				switch $0 {
-				case .failure(let error):
-					block(.error(error))
-				case .success(let element):
-					block(.success(element))
-				}
-			}
+			function { block($0.mapError { $0 }) }
 			return Disposables.create()
 		}
 	}

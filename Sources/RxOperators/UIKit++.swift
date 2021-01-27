@@ -77,7 +77,7 @@ extension Reactive where Base: UIStackView {
 extension Reactive where Base: UIView {
 	
 	public var id: Binder<String?> {
-		self[\.accessibilityIdentifier]
+		self[keyPath: \.accessibilityIdentifier]
 	}
 	
 }

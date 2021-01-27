@@ -1,4 +1,0 @@
-use_frameworks!
-target 'RxOperators_Tests' do
-  pod 'RxOperators', :path => '../'
-end

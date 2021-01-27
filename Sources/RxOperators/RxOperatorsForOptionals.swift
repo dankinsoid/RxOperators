@@ -14,13 +14,13 @@ public func =><T: ObservableConvertibleType, O: ObserverType>(_ lhs: T?, _ rhs: 
 
 public func =><T: ObservableConvertibleType, O: AnyObject>(_ lhs: T?, _ rhs: (O, ReferenceWritableKeyPath<O, T.Element?>)) -> Disposable {
     let deallocated = Reactive(rhs.0).deallocated
-    return lhs?.asObservable().takeUntil(deallocated).map({ $0 }).subscribe(WeakRef(object: rhs.0, keyPath: rhs.1).asObserver()) ?? Disposables.create()
+	return lhs?.asObservable().take(until: deallocated).map({ $0 }).subscribe(WeakRef(object: rhs.0, keyPath: rhs.1).asObserver()) ?? Disposables.create()
 }
 
 @discardableResult
 public func =><T: DisposableObservableType, O: AnyObject>(_ lhs: T?, _ rhs: (O, ReferenceWritableKeyPath<O, T.Element?>)) -> Disposable {
     let deallocated = Reactive(rhs.0).deallocated
-    if let result = lhs?.takeUntil(deallocated).map({ $0 }).subscribe(WeakRef(object: rhs.0, keyPath: rhs.1).asObserver()) {
+	if let result = lhs?.take(until: deallocated).map({ $0 }).subscribe(WeakRef(object: rhs.0, keyPath: rhs.1).asObserver()) {
         lhs?.insert(disposable: result)
         return result
     }
@@ -53,13 +53,13 @@ public func =><T: DisposableObservableType, O: DisposableObserverType>(_ lhs: T?
 
 public func ==><T: ObservableConvertibleType, O: AnyObject>(_ lhs: T?, _ rhs: (O, ReferenceWritableKeyPath<O, T.Element?>)) -> Disposable {
     let deallocated = Reactive(rhs.0).deallocated
-    return lhs?.asObservable().takeUntil(deallocated).asDriver().drive(WeakRef(object: rhs.0, keyPath: rhs.1).asObserver()) ?? Disposables.create()
+	return lhs?.asObservable().take(until: deallocated).asDriver().drive(WeakRef(object: rhs.0, keyPath: rhs.1).asObserver()) ?? Disposables.create()
 }
 
 @discardableResult
 public func ==><T: DisposableObservableType, O: AnyObject>(_ lhs: T?, _ rhs: (O, ReferenceWritableKeyPath<O, T.Element?>)) -> Disposable {
     let deallocated = Reactive(rhs.0).deallocated
-    if let result = lhs?.takeUntil(deallocated).asDriver().drive(WeakRef(object: rhs.0, keyPath: rhs.1).asObserver()) {
+	if let result = lhs?.take(until: deallocated).asDriver().drive(WeakRef(object: rhs.0, keyPath: rhs.1).asObserver()) {
         lhs?.insert(disposable: result)
         return result
     }

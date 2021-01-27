@@ -27,12 +27,12 @@ public func =><T: ObservableConvertibleType, O: ObserverType>(_ lhs: T?, _ rhs: 
 
 public func =><T: ObservableConvertibleType, O: AnyObject>(_ lhs: T?, _ rhs:  (O, (O) -> (T.Element) -> ())) -> Disposable {
     let deallocated = Reactive(rhs.0).deallocated
-    return lhs?.asObservable().takeUntil(deallocated).subscribe(Reactive(rhs.0).weak(method: rhs.1)) ?? Disposables.create()
+	return lhs?.asObservable().take(until: deallocated).subscribe(Reactive(rhs.0).weak(method: rhs.1)) ?? Disposables.create()
 }
 
 public func =><T: ObservableConvertibleType, O: AnyObject>(_ lhs: T?, _ rhs:  (O, (O) -> () -> ())) -> Disposable where T.Element == Void {
     let deallocated = Reactive(rhs.0).deallocated
-    return lhs?.asObservable().takeUntil(deallocated).subscribe(Reactive(rhs.0).weak(method: rhs.1)) ?? Disposables.create()
+	return lhs?.asObservable().take(until: deallocated).subscribe(Reactive(rhs.0).weak(method: rhs.1)) ?? Disposables.create()
 }
 
 public func =><O: ObservableConvertibleType>(_ lhs: O?, _ rhs: @escaping (O.Element) -> ()) -> Disposable {
@@ -45,13 +45,13 @@ public func =><O: ObservableConvertibleType>(_ lhs: O?, _ rhs: [(O.Element) -> (
 
 public func =><T: ObservableConvertibleType, O: AnyObject>(_ lhs: T?, _ rhs: (O, ReferenceWritableKeyPath<O, T.Element>)) -> Disposable {
 	let deallocated = Reactive(rhs.0).deallocated
-    return lhs?.asObservable().takeUntil(deallocated).subscribe(WeakRef(object: rhs.0, keyPath: rhs.1).asObserver()) ?? Disposables.create()
+	return lhs?.asObservable().take(until: deallocated).subscribe(WeakRef(object: rhs.0, keyPath: rhs.1).asObserver()) ?? Disposables.create()
 }
 
 @discardableResult
 public func =><T: DisposableObservableType, O: AnyObject, E>(_ lhs: T?, _ rhs: (O, ReferenceWritableKeyPath<O, E>)) -> Disposable where E == T.Element {
 	let deallocated = Reactive(rhs.0).deallocated
-	if let result = lhs?.takeUntil(deallocated).subscribe(WeakRef(object: rhs.0, keyPath: rhs.1).asObserver()) {
+	if let result = lhs?.take(until: deallocated).subscribe(WeakRef(object: rhs.0, keyPath: rhs.1).asObserver()) {
 		lhs?.insert(disposable: result)
 		return result
 	}
@@ -109,7 +109,7 @@ public func =>(_ lhs: Disposable?, _ rhs: inout Disposable?) {
 }
 
 public func =><T: ObservableConvertibleType, O: SchedulerType>(_ lhs: T?, _ rhs: O) -> Observable<T.Element>? {
-    return lhs?.asObservable().observeOn(rhs)
+	return lhs?.asObservable().observe(on: rhs)
 }
 
 public func ==><O: ObservableConvertibleType>(_ lhs: O?, _ rhs: @escaping (O.Element) -> ()) -> Disposable {
@@ -127,24 +127,24 @@ public func ==><O: DisposableObservableType>(_ lhs: O?, _ rhs: @escaping (O.Elem
 
 public func ==><T: ObservableConvertibleType, O: AnyObject>(_ lhs: T?, _ rhs: (O, ReferenceWritableKeyPath<O, T.Element>)) -> Disposable {
 	let deallocated = Reactive(rhs.0).deallocated
-    return lhs?.asObservable().takeUntil(deallocated).asDriver().drive(WeakRef(object: rhs.0, keyPath: rhs.1).asObserver()) ?? Disposables.create()
+	return lhs?.asObservable().take(until: deallocated).asDriver().drive(WeakRef(object: rhs.0, keyPath: rhs.1).asObserver()) ?? Disposables.create()
 }
 
 public func ==><T: ObservableConvertibleType, O: AnyObject>(_ lhs: T?, _ rhs:  (O, (O) -> (T.Element) -> ())) -> Disposable {
     let deallocated = Reactive(rhs.0).deallocated
-    return lhs?.asObservable().takeUntil(deallocated).asDriver().drive(Reactive(rhs.0).weak(method: rhs.1)) ?? Disposables.create()
+	return lhs?.asObservable().take(until: deallocated).asDriver().drive(Reactive(rhs.0).weak(method: rhs.1)) ?? Disposables.create()
 }
 
 public func ==><T: ObservableConvertibleType, O: AnyObject>(_ lhs: T?, _ rhs:  (O, (O) -> () -> ())) -> Disposable where T.Element == Void {
     let deallocated = Reactive(rhs.0).deallocated
-    return lhs?.asObservable().takeUntil(deallocated).asDriver().drive(Reactive(rhs.0).weak(method: rhs.1)) ?? Disposables.create()
+	return lhs?.asObservable().take(until: deallocated).asDriver().drive(Reactive(rhs.0).weak(method: rhs.1)) ?? Disposables.create()
 }
 
 
 @discardableResult
 public func ==><T: DisposableObservableType, O: AnyObject>(_ lhs: T?, _ rhs: (O, ReferenceWritableKeyPath<O, T.Element>)) -> Disposable {
 	let deallocated = Reactive(rhs.0).deallocated
-	if let result = lhs?.takeUntil(deallocated).asDriver().drive(WeakRef(object: rhs.0, keyPath: rhs.1).asObserver()) {
+	if let result = lhs?.take(until: deallocated).asDriver().drive(WeakRef(object: rhs.0, keyPath: rhs.1).asObserver()) {
 		lhs?.insert(disposable: result)
 		return result
 	}
