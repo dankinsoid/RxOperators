@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'RxOperators'
-  s.version          = '2.1.0'
+  s.version          = '2.2.0'
   s.summary          = 'A short description of RxOperators.'
   s.description      = <<-DESC
 TODO: Add long description of the pod here.
@@ -25,5 +25,5 @@ TODO: Add long description of the pod here.
   s.source_files = 'Sources/RxOperators/**/*'
   s.dependency 'RxSwift', '~> 6.0'
   s.dependency 'RxCocoa', '~> 6.0'
-  s.dependency 'VD'
+  s.dependency 'VD', '~> 2.2.0'
 end
