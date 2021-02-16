@@ -128,8 +128,95 @@ extension Reactive where Base: UIView {
 		}.distinctUntilChanged()
 	}
 	
+	public var willAppear: ControlEvent<Bool> {
+		let source = movedToWindow.asObservable().flatMap {[weak base] in
+			base?.vc?.rx.methodInvoked(#selector(UIViewController.viewWillAppear)).map { $0.first as? Bool ?? false } ?? .empty()
+		}
+		return ControlEvent(events: source)
+	}
+	
+	public var didAppear: ControlEvent<Bool> {
+		ControlEvent(events: movedToWindow.asObservable().flatMap {[weak base] in
+			base?.vc?.rx.methodInvoked(#selector(UIViewController.viewDidAppear)).map { $0.first as? Bool ?? false } ?? .empty()
+		})
+	}
+	
+	public var willDisappear: ControlEvent<Bool> {
+		ControlEvent(events: movedToWindow.asObservable().flatMap {[weak base] in
+			base?.vc?.rx.methodInvoked(#selector(UIViewController.viewWillDisappear)).map { $0.first as? Bool ?? false } ?? .empty()
+		})
+	}
+	
+	public var didDisappear: ControlEvent<Bool> {
+		ControlEvent(events: movedToWindow.asObservable().flatMap {[weak base] in
+			base?.vc?.rx.methodInvoked(#selector(UIViewController.viewDidDisappear)).map { $0.first as? Bool ?? false } ?? .empty()
+		})
+	}
+	
+	public var layoutSubviews: ControlEvent<Void> {
+		let source = self.methodInvoked(#selector(Base.layoutSubviews)).map { _ in }
+		return ControlEvent(events: source)
+	}
+	
+	public var isHidden: Observable<Bool> {
+		value(at: \.isHidden)
+	}
+	
+	public var alpha: Observable<CGFloat> {
+		value(at: \.opacity).map { CGFloat($0) }
+	}
+	
+	public var isVisible: Observable<Bool> {
+		Observable.combineLatest(
+			isHidden, alpha, isOnScreen, Observable.merge(willAppear.map { _ in true }, didDisappear.map { _ in false }).startWith(base.window != nil)
+		)
+		.map { !$0.0 && $0.1 > 0 && $0.2 && $0.3 }
+		.distinctUntilChanged()
+	}
+	
+	private func value<T: Equatable>(at keyPath: KeyPath<CALayer, T>) -> Observable<T> {
+		Observable.create {[weak base] in
+			let observer = base?.layer.observe(keyPath, $0.onNext) ?? .init()
+			base?.layerObservers.observers.append(observer)
+			return Disposables.create(with: observer.invalidate)
+		}
+	}
+	
 }
 
+extension UIView {
+
+	fileprivate var layerObservers: NSKeyValueObservations {
+		let current = objc_getAssociatedObject(self, &layerObservrersKey) as? NSKeyValueObservations
+		let bag = current ?? NSKeyValueObservations()
+		if current == nil {
+			objc_setAssociatedObject(self, &layerObservrersKey, bag, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+		}
+		return bag
+	}
+
+}
+
+private var layerObservrersKey = "layerObservrersKey0000"
+
+extension CALayer {
+	
+	fileprivate func observe<T: Equatable>(_ keyPath: KeyPath<CALayer, T>, _ action: @escaping (T) -> Void) -> NSKeyValueObservation {
+		observe(keyPath, options: [.new, .old, .initial]) { (layer, change) in
+			guard let value = change.newValue, change.newValue != change.oldValue else { return }
+			action(value)
+		}
+	}
+	
+}
+
+private final class NSKeyValueObservations {
+	var observers: [NSKeyValueObservation] = []
+	
+	func invalidate() {
+		observers.forEach { $0.invalidate() }
+	}
+}
 extension Binder where Value == CGAffineTransform {
 	
 	public func scale() -> AnyObserver<CGFloat> {
