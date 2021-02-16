@@ -100,6 +100,34 @@ extension Reactive where Base: UIView {
 		Binder(base, binding: { $0.transform = $1 })
 	}
 	
+	public var movedToWindow: Single<Void> {
+		methodInvoked(#selector(UIView.didMoveToWindow))
+			.map {[weak base] _ in base?.window != nil }
+			.startWith(base.window != nil)
+			.filter { $0 }
+			.map { _ in }
+			.take(1)
+			.asSingle()
+	}
+	
+	public var isOnScreen: Observable<Bool> {
+		Observable.create {[weak base] in
+			Disposables.create(with: base?.observeIsOnScreen($0.onNext) ?? {})
+		}
+	}
+	
+	public var frame: Observable<CGRect> {
+		Observable.create {[weak base] observer in
+			Disposables.create(with: base?.observeFrame { observer.onNext($0.frame) } ?? {})
+		}.distinctUntilChanged()
+	}
+	
+	public var frameOnWindow: Observable<CGRect> {
+		Observable.create {[weak base] in
+			Disposables.create(with: base?.observeFrameInWindow($0.onNext) ?? {})
+		}.distinctUntilChanged()
+	}
+	
 }
 
 extension Binder where Value == CGAffineTransform {
