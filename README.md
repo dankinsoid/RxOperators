@@ -131,7 +131,7 @@ import PackageDescription
 let package = Package(
   name: "SomeProject",
   dependencies: [
-    .package(url: "https://github.com/dankinsoid/RxOperators.git", from: "2.4.0")
+    .package(url: "https://github.com/dankinsoid/RxOperators.git", from: "2.5.0")
     ],
   targets: [
     .target(name: "SomeProject", dependencies: ["RxOperators"])
