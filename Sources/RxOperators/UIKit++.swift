@@ -176,8 +176,9 @@ extension Reactive where Base: UIView {
 	
 	private func value<T: Equatable>(at keyPath: KeyPath<CALayer, T>) -> Observable<T> {
 		Observable.create {[weak base] in
-			let observer = base?.layer.observe(keyPath, $0.onNext) ?? .init()
-			base?.layerObservers.observers.append(observer)
+			guard let base = base else { return Disposables.create() }
+			let observer: NSKeyValueObservation = base.layer.observe(keyPath, $0.onNext)
+			base.layerObservers.observers.append(observer)
 			return Disposables.create(with: observer.invalidate)
 		}
 	}

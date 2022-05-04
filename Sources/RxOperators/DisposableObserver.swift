@@ -8,7 +8,7 @@
 import RxSwift
 import RxCocoa
 
-public protocol DisposableObserverType: class {
+public protocol DisposableObserverType: AnyObject {
     associatedtype Element
     func on(_ event: Event<Element>)
     func observe<O: ObservableConvertibleType>(observable: O) where O.Element == Element
@@ -55,7 +55,7 @@ extension ObserverType where Self: AnyObject {
     
 }
 
-public protocol DisposableObservableType: class, ObservableType {
+public protocol DisposableObservableType: AnyObject, ObservableType {
     func insert(disposable: Disposable)
     func subscribe<O: ObserverType>(observer: O) where O.Element == Element
 }
