@@ -1,10 +1,4 @@
-//
-//  File.swift
-//  
-//
-//  Created by Данил Войдилов on 17.02.2021.
-//
-
+#if canImport(UIKit)
 import RxSwift
 import RxCocoa
 import UIKit
@@ -70,3 +64,4 @@ public extension Reactive where Base: UIViewController {
 	}
 	
 }
+#endif

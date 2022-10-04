@@ -1,16 +1,6 @@
-//
-//  Rx++.swift
-//  MusicImport
-//
-//  Created by Данил Войдилов on 21.06.2019.
-//  Copyright © 2019 Данил Войдилов. All rights reserved.
-//
-
-
 import Foundation
 import RxSwift
 import RxCocoa
-import VDKit
 
 extension PrimitiveSequenceType where Self.Trait == SingleTrait {
 	
@@ -31,12 +21,11 @@ extension NSNotification.Name {
 	
 }
 
-extension ObservableType where Element: OptionalProtocol {
+extension ObservableType {
 	
-	public func skipNil() -> Observable<Element.Wrapped> {
-		return map({ $0.asOptional() }).filter({ $0 != nil }).map({ $0! })
+	public func skipNil<T>() -> Observable<T> where T? == Element {
+        compactMap { $0 }
 	}
-	
 }
 
 extension ObservableType where Element == Bool? {
@@ -276,12 +265,16 @@ extension ObservableConvertibleType where Element: Collection {
 	public var isEmpty: Observable<Bool> { asObservable().map { $0.isEmpty } }
 }
 
-extension ObservableConvertibleType where Element: OptionalProtocol {
-	public var isNil: Observable<Bool> { asObservable().map { $0.asOptional() == nil } }
+extension ObservableConvertibleType {
+	public func isNil<T>() -> Observable<Bool> where Element == T? {
+        asObservable().map { $0 == nil }
+    }
 }
 
-extension ObservableConvertibleType where Element: OptionalProtocol, Element.Wrapped: Collection {
-	public var isNilOrEmpty: Observable<Bool> { asObservable().map { $0.asOptional()?.isEmpty != false } }
+extension ObservableConvertibleType {
+    public func isNilOrEmpty<T: Collection>() -> Observable<Bool> where T? == Element {
+        asObservable().map { $0?.isEmpty != false }
+    }
 }
 
 extension ObservableType where Element: Equatable {
@@ -432,12 +425,14 @@ extension String {
 		let commonSfCount = max(0, min(commonSuffix(with: to).count, min(self.count, to.count) - commonPr.count))
 		for i in commonPr.count..<(max(self.count, to.count) - commonSfCount) {
 			var last = result[result.count - 1]
+            let indexFrom = last.index(last.startIndex, offsetBy: i)
+            let indexTo = to.index(to.startIndex, offsetBy: i)
 			if i < last.count, i < to.count {
-				last[.first + i] = to[.first + i]
+                last.replaceSubrange(indexFrom...indexFrom, with: to[indexTo...indexTo])
 			} else if i < to.count {
-				last.append(to[.first + i]!)
+				last.append(to[indexTo])
 			} else if i < last.count {
-				_ = last.remove(at: .first + i)
+				_ = last.remove(at: indexFrom)
 			}
 			result.append(last)
 		}

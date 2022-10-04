@@ -1,23 +1,56 @@
-//
-//  UIKit++.swift
-//  TestProject
-//
-//  Created by Daniil on 21.10.2020.
-//  Copyright © 2020 Daniil. All rights reserved.
-//
-
-import UIKit
-import VDKit
 import RxSwift
 import RxCocoa
+import CoreGraphics
+import QuartzCore
 
 extension ObservableConvertibleType {
-	
-	public func asDriver() -> Driver<Element> {
-		asDriver(onErrorDriveWith: .never())
-	}
-	
+    
+    public func asDriver() -> Driver<Element> {
+        asDriver(onErrorDriveWith: .never())
+    }
 }
+
+extension CALayer {
+    
+    fileprivate func observe<T: Equatable>(_ keyPath: KeyPath<CALayer, T>, _ action: @escaping (T) -> Void) -> NSKeyValueObservation {
+        observe(keyPath, options: [.new, .old, .initial]) { (layer, change) in
+            guard let value = change.newValue, change.newValue != change.oldValue else { return }
+            action(value)
+        }
+    }
+    
+}
+
+private final class NSKeyValueObservations {
+    var observers: [NSKeyValueObservation] = []
+    
+    func invalidate() {
+        observers.forEach { $0.invalidate() }
+    }
+}
+
+extension Binder where Value == CGAffineTransform {
+    
+    public func scale() -> AnyObserver<CGFloat> {
+        mapObserver { CGAffineTransform(scaleX: $0, y: $0) }
+    }
+    
+    public func scale() -> AnyObserver<CGSize> {
+        mapObserver { CGAffineTransform(scaleX: $0.width, y: $0.height) }
+    }
+    
+    public func rotation() -> AnyObserver<CGFloat> {
+        mapObserver { CGAffineTransform(rotationAngle: $0) }
+    }
+    
+    public func translation() -> AnyObserver<CGPoint> {
+        mapObserver { CGAffineTransform(translationX: $0.x, y: $0.y) }
+    }
+    
+}
+
+#if canImport(UIKit)
+import UIKit
 
 extension Reactive where Base: UIResponder {
 	
@@ -199,41 +232,4 @@ extension UIView {
 }
 
 private var layerObservrersKey = "layerObservrersKey0000"
-
-extension CALayer {
-	
-	fileprivate func observe<T: Equatable>(_ keyPath: KeyPath<CALayer, T>, _ action: @escaping (T) -> Void) -> NSKeyValueObservation {
-		observe(keyPath, options: [.new, .old, .initial]) { (layer, change) in
-			guard let value = change.newValue, change.newValue != change.oldValue else { return }
-			action(value)
-		}
-	}
-	
-}
-
-private final class NSKeyValueObservations {
-	var observers: [NSKeyValueObservation] = []
-	
-	func invalidate() {
-		observers.forEach { $0.invalidate() }
-	}
-}
-extension Binder where Value == CGAffineTransform {
-	
-	public func scale() -> AnyObserver<CGFloat> {
-		mapObserver { CGAffineTransform(scaleX: $0, y: $0) }
-	}
-	
-	public func scale() -> AnyObserver<CGSize> {
-		mapObserver { CGAffineTransform(scaleX: $0.width, y: $0.height) }
-	}
-	
-	public func rotation() -> AnyObserver<CGFloat> {
-		mapObserver { CGAffineTransform(rotationAngle: $0) }
-	}
-	
-	public func translation() -> AnyObserver<CGPoint> {
-		mapObserver { CGAffineTransform(translationX: $0.x, y: $0.y) }
-	}
-	
-}
+#endif

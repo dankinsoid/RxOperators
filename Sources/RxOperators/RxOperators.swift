@@ -1,11 +1,4 @@
-//
-//  RxOperators.swift
-//
-//  Created by Данил Войдилов on 19.07.2018.
-//
-
 import Foundation
-import VDKit
 import RxSwift
 import RxCocoa
 
@@ -298,8 +291,8 @@ public func +=<O: Disposable>(_ lhs: inout Cancelable, _ rhs: O) {
 	lhs = lhs + rhs
 }
 
-public func ?? <O: ObservableType>(_ lhs: O, _ rhs: @escaping @autoclosure () -> O.Element.Wrapped) -> Observable<O.Element.Wrapped> where O.Element: OptionalProtocol {
-	lhs.map { $0.asOptional() ?? rhs() }
+public func ?? <O: ObservableType, T>(_ lhs: O, _ rhs: @escaping @autoclosure () -> T) -> Observable<T> where O.Element == T? {
+	lhs.map { $0 ?? rhs() }
 }
 
 public func &<T1: ObservableConvertibleType, T2: ObservableConvertibleType>(_ lhs: T1, _ rhs: T2) -> (T1, T2)
