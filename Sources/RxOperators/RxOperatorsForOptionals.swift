@@ -99,7 +99,7 @@ public func =>><A: ObservableConvertibleType, O: ObserverType>(_ lhs: A, _ rhs: 
 	return lhs.asObservable().distinctUntilChanged() => rhs
 }
 
-public func =>><A: ObservableConvertibleType, O: ObserverType>(_ lhs: A, _ rhs: O?) -> Disposable where O.Element: Equatable, O.Element == A.Element? {
+public func =>><A: ObservableConvertibleType, O: ObserverType>(_ lhs: A, _ rhs: O?) -> Disposable where A.Element: Equatable, O.Element == A.Element? {
 	guard let rhs = rhs else { return Disposables.create() }
 	return lhs.asObservable().distinctUntilChanged() => rhs
 }

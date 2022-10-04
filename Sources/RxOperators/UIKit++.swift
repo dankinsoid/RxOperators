@@ -91,21 +91,20 @@ extension Reactive where Base: UISearchBar {
 
 }
 
-extension Reactive where Base: UIStackView {
-	
-	public func update<T, V: UIView>(create: @escaping () -> V, update: @escaping (T, V, Int) -> Void) -> Binder<[T]> {
-		Binder(base) {
-			$0.update(items: $1, create: create, update: update)
-		}
-	}
-	
-	public func update<T, V: UIView>(create: @escaping () -> V, update: @escaping (V) -> AnyObserver<T>) -> Binder<[T]> {
-		self.update(create: create) { value, view, _ in
-			update(view).onNext(value)
-		}
-	}
-	
-}
+//extension Reactive where Base: UIStackView {
+//
+//	public func update<T, V: UIView>(create: @escaping () -> V, update: @escaping (T, V, Int) -> Void) -> Binder<[T]> {
+//		Binder(base) {
+//			$0.update(items: $1, create: create, update: update)
+//		}
+//	}
+//
+//	public func update<T, V: UIView>(create: @escaping () -> V, update: @escaping (V) -> AnyObserver<T>) -> Binder<[T]> {
+//		self.update(create: create) { value, view, _ in
+//			update(view).onNext(value)
+//		}
+//	}
+//}
 
 extension Reactive where Base: UIView {
 	
@@ -115,17 +114,17 @@ extension Reactive where Base: UIView {
 	
 }
 
-extension ObserverType {
-	
-	public func animate(_ duration: TimeInterval, options: UIView.AnimationOptions = []) -> AnyObserver<Element> {
-		AnyObserver { event in
-			UIView.animate(duration, options: options, {
-				self.on(event)
-			})
-		}
-	}
-	
-}
+//extension ObserverType {
+//
+//	public func animate(_ duration: TimeInterval, options: UIView.AnimationOptions = []) -> AnyObserver<Element> {
+//		AnyObserver { event in
+//			UIView.animate(duration, options: options, {
+//				self.on(event)
+//			})
+//		}
+//	}
+//
+//}
 
 extension Reactive where Base: UIView {
 	
@@ -143,23 +142,23 @@ extension Reactive where Base: UIView {
 			.asSingle()
 	}
 	
-	public var isOnScreen: Observable<Bool> {
-		Observable.create {[weak base] in
-			Disposables.create(with: base?.observeIsOnScreen($0.onNext) ?? {})
-		}
-	}
-	
-	public var frame: Observable<CGRect> {
-		Observable.create {[weak base] observer in
-			Disposables.create(with: base?.observeFrame { observer.onNext($0.frame) } ?? {})
-		}.distinctUntilChanged()
-	}
-	
-	public var frameOnWindow: Observable<CGRect> {
-		Observable.create {[weak base] in
-			Disposables.create(with: base?.observeFrameInWindow($0.onNext) ?? {})
-		}.distinctUntilChanged()
-	}
+//	public var isOnScreen: Observable<Bool> {
+//		Observable.create {[weak base] in
+//			Disposables.create(with: base?.observeIsOnScreen($0.onNext) ?? {})
+//		}
+//	}
+//
+//	public var frame: Observable<CGRect> {
+//		Observable.create {[weak base] observer in
+//			Disposables.create(with: base?.observeFrame { observer.onNext($0.frame) } ?? {})
+//		}.distinctUntilChanged()
+//	}
+//
+//	public var frameOnWindow: Observable<CGRect> {
+//		Observable.create {[weak base] in
+//			Disposables.create(with: base?.observeFrameInWindow($0.onNext) ?? {})
+//		}.distinctUntilChanged()
+//	}
 	
 	public var willAppear: ControlEvent<Bool> {
 		let source = movedToWindow.asObservable().flatMap {[weak base] in
@@ -199,13 +198,13 @@ extension Reactive where Base: UIView {
 		value(at: \.opacity).map { CGFloat($0) }
 	}
 	
-	public var isVisible: Observable<Bool> {
-		Observable.combineLatest(
-			isHidden, alpha, isOnScreen, Observable.merge(willAppear.map { _ in true }, didDisappear.map { _ in false }).startWith(base.window != nil)
-		)
-		.map { !$0.0 && $0.1 > 0 && $0.2 && $0.3 }
-		.distinctUntilChanged()
-	}
+//	public var isVisible: Observable<Bool> {
+//		Observable.combineLatest(
+//			isHidden, alpha, isOnScreen, Observable.merge(willAppear.map { _ in true }, didDisappear.map { _ in false }).startWith(base.window != nil)
+//		)
+//		.map { !$0.0 && $0.1 > 0 && $0.2 && $0.3 }
+//		.distinctUntilChanged()
+//	}
 	
 	private func value<T: Equatable>(at keyPath: KeyPath<CALayer, T>) -> Observable<T> {
 		Observable.create {[weak base] in
@@ -218,9 +217,13 @@ extension Reactive where Base: UIView {
 	
 }
 
-extension UIView {
+private extension UIView {
+    
+    var vc: UIViewController? {
+        (next as? UIViewController) ?? superview?.vc
+    }
 
-	fileprivate var layerObservers: NSKeyValueObservations {
+    var layerObservers: NSKeyValueObservations {
 		let current = objc_getAssociatedObject(self, &layerObservrersKey) as? NSKeyValueObservations
 		let bag = current ?? NSKeyValueObservations()
 		if current == nil {
